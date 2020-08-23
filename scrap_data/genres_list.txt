@@ -1,0 +1,43 @@
+Action
+Adventure
+Cars     
+Comedy   
+Dementia 
+Demons
+Mystery
+Drama    
+Ecchi    
+Fantasy  
+Game       
+Hentai 
+Historical  
+Horror
+Kids
+Magic
+Martial Arts
+Mecha
+Music
+Parody
+Harem  
+Josei
+Military
+Police
+Psychological
+Romance
+Samurai
+School
+Sci-Fi
+Seinen
+Shoujo
+Shoujo
+Shounen
+Shounen Ai
+Slice of Life
+Space
+Sports
+Super Power
+Supernatural
+Thriller
+Vampire
+Yaoi
+Yuri
