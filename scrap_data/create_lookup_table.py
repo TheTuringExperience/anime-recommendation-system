@@ -3,6 +3,7 @@
 import os
 import json
 import pandas as pd
+import re
 
 working_dir = os.getcwd()
 anime_codes = pd.read_csv(os.path.join(
@@ -11,8 +12,9 @@ anime_codes = pd.read_csv(os.path.join(
 code_lookup_dict = dict()
 
 for index, row in anime_codes.iterrows():
-    code_lookup_dict.update({row["name"]: row["code"]})
+    code_lookup_dict.update(
+        {re.sub("\s\s+", " ", re.sub(r"[-_*]", " ", row["name"])): row["code"]})
 
-with open("../data/code_lookup_table.json", "w", encoding="utf-8") as j:
+with open("../data/codes_lookup_table.json", "w", encoding="utf-8") as j:
     json.dump(code_lookup_dict, j)
     j.close()
