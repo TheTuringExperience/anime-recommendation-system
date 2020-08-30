@@ -8,8 +8,7 @@ import os
 from time import time
 
 genres = []
-working_dir = os.getcwd()
-genres_directory_path = os.path.join(working_dir, "anime_codes_by_genre")
+genres_directory_path = "../data/anime_codes_by_genre"
 
 with open("genres_list.txt", "r") as f:
     lines = f.readlines()

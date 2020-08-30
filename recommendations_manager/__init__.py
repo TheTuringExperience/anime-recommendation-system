@@ -1,20 +1,22 @@
-" It's in charge of managing communication between the api and the recommerder algorith"
+""" It's in charge of managing communication between the api and the recommerder algoriths """
 
-from typing import List, Dict
+import os
 import json
-import re
-from recommendation_algorithm.recommender import get_neighbours
+import pickle
+from typing import List
+from algorithms import *
+
 
 with open("data/codes_lookup_table.json", "r") as j:
     codes_lookup_table = json.load(j)
     j.close()
 
+names_lookup_table = {name: code for code, name in codes_lookup_table.items()}
 
-def obtain_recommendations(anime_names: List[str]) -> Dict:    
-    codes = get_anime_codes([name.lower() for name in anime_names])
-    return codes
-
-
-def get_anime_codes(anime_names: List[str]) -> Dict:
-    codes = {name: codes_lookup_table.get(name, None) for name in anime_names}
-    return codes
+def obtain_recommendations(names: List[str], method: str) -> Dict[str: List[str]]:
+    # TODO Scrap the anime data with the code as file name instead of the anime name
+    codes = [codes_lookup_table[name] for name in names]
+    recom_codes = recommender_algorithms[method](codes)
+    recom_names = {names_lookup_table[anime_code]: list(map(lambda x: names_lookup_table[x], recommendations))
+                   for anime_code, recommendations in recom_codes.items()}
+    return recom_names

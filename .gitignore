@@ -3,3 +3,6 @@ __pycache__/
 *.json
 *.txt
 *.vscode
+*.pkl
+*.npy
+*.ann
