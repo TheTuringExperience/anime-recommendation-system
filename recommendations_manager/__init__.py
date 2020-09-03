@@ -3,7 +3,7 @@
 import os
 import json
 import pickle
-from typing import List
+from typing import List, Dict
 from algorithms import *
 
 
@@ -13,7 +13,7 @@ with open("data/codes_lookup_table.json", "r") as j:
 
 names_lookup_table = {name: code for code, name in codes_lookup_table.items()}
 
-def obtain_recommendations(names: List[str], method: str) -> Dict[str: List[str]]:
+def obtain_recommendations(names: List[str], method: str) -> Dict[str, List[str]]:
     # TODO Scrap the anime data with the code as file name instead of the anime name
     codes = [codes_lookup_table[name] for name in names]
     recom_codes = recommender_algorithms[method](codes)

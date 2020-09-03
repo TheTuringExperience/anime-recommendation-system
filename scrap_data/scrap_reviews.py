@@ -14,18 +14,19 @@ num_reviews = 40
 
 jikan = Jikan()
 
-for index, row in codes_df[0:500].iterrows():
+#scrap the reviews for the first 1000
+for index, row in codes_df[0:1000].iterrows():
     # Put an upper bound on the amoun of reviews to reduce the inbalance problem
     try:
         reviews = jikan.anime(row["code"], extension='reviews')['reviews'][:num_reviews]
     
     except APIException as e:
         #If myanimelist refuses the connection stop the scrapping and resume some time later
-        logging.error(f"The server did not responded when scrapping {index}")
+        logging.error(f"The server did not responded when scrapping {index}: " + str(e))
         break
 
     except Exception as e:
-        print(f"Problems getting data for {row['name']}: " + str(e))
+        logging.error(f"Problems getting data for {row['name']}: " + str(e))
 
     #if the anime has no reviews then there is no point in making a file for it
     if reviews:
@@ -34,7 +35,6 @@ for index, row in codes_df[0:500].iterrows():
                 f.writelines(re.sub(r"\s\s+", "", review["content"].replace("\\n", "")))
             f.close()        
     else:
-        print(f"No reviews available for {row['name']}")
+        logging.error(f"No reviews available for {row['name']}")
         continue
-    #wait some random time between two and eight seconds scrap the next batch of reviews
-    time.sleep(randint(2, 8))
+    
