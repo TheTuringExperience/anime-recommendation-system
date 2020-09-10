@@ -26,11 +26,21 @@ for index, row in codes_df[0:num_anime].iterrows():
     
     except APIException as e:
         #If myanimelist refuses the connection stop the scrapping and resume some time later
-        logging.error(f"The server did not responded when scrapping {index}: " + str(e))
-        break
+        logging.error(f"The server did not respond when scrapping {index}: " + str(e))
+        
+        try:
+            logging.info("Retrying after 15 seconds...")
+            time.sleep(15)
+            reviews = jikan.anime(row["code"], extension='reviews')['reviews'][:num_reviews]
+        except APIException as e:
+            #If myanimelist refuses the connection stop the scrapping and resume some time later
+            logging.error(f"The server did not respond again when scrapping {index}: " + str(e))
+            continue
 
     except Exception as e:
         logging.error(f"Problems getting data for {row['name']}: " + str(e))
+        continue
+
 
     #if the anime has no reviews then there is no point in making a file for it
     if reviews:
