@@ -29,7 +29,7 @@ for index, row in codes_df[0:num_anime].iterrows():
         logging.error(f"The server did not respond when scrapping {index}: " + str(e))
         
         try:
-            logging.info("Retrying after 15 seconds...")
+            print("Retrying after 15 seconds...")
             time.sleep(15)
             reviews = jikan.anime(row["code"], extension='reviews')['reviews'][:num_reviews]
         except APIException as e:
@@ -50,7 +50,7 @@ for index, row in codes_df[0:num_anime].iterrows():
                 line_list.append(re.sub(r"\s\s+", "", review["content"].replace("\\n", "")) + '\n')
             f.writelines(line_list)
             f.close()        
-        print("Succesfully collected reviews for #{}: {}-{}".format(index, row['code'], row['name']))
+        print("Collected #{}: {}-{}".format(index, row['code'], row['name']))
 
     else:
         logging.error(f"No reviews available for {row['name']}")
