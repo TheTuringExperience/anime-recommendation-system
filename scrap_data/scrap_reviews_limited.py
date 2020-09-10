@@ -10,13 +10,14 @@ from jikanpy import Jikan
 logging.basicConfig(level=logging.ERROR)
 
 codes_df = pd.read_csv("../data/anime_codes.csv")
-num_reviews = 40
+num_reviews = 3
+num_anime = 3
 time_between_requests = 2  # in seconds
 
 jikan = Jikan()
 
 #scrap the reviews for the first 1000
-for index, row in codes_df[0:1000].iterrows():
+for index, row in codes_df[0:num_anime].iterrows():
     # Put an upper bound on the amoun of reviews to reduce the inbalance problem
     try:
         reviews = jikan.anime(row["code"], extension='reviews')['reviews'][:num_reviews]
@@ -33,10 +34,14 @@ for index, row in codes_df[0:1000].iterrows():
 
     #if the anime has no reviews then there is no point in making a file for it
     if reviews:
+        line_list = []
         with open(f"../data/reviews/{row['code']}.txt", "w", encoding="utf-8") as f:
             for review in reviews:                     
-                f.writelines(re.sub(r"\s\s+", "", review["content"].replace("\\n", "")))
+                line_list.append(re.sub(r"\s\s+", "", review["content"].replace("\\n", "")) + '\n')
+            f.writelines(line_list)
             f.close()        
+        print("Succesfully collected reviews for #{}: {}-{}".format(index, row['code'], row['name']))
+
     else:
         logging.error(f"No reviews available for {row['name']}")
         continue
