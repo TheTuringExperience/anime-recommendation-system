@@ -10,8 +10,8 @@ from jikanpy import Jikan
 logging.basicConfig(level=logging.ERROR)
 
 codes_df = pd.read_csv("../data/anime_codes.csv")
-num_reviews = 3
-num_anime = 3
+num_reviews = 40
+num_anime = 1000
 time_between_requests = 2  # in seconds
 
 jikan = Jikan()
