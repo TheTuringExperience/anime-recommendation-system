@@ -201,7 +201,7 @@ def train_tfidf_word2vec(df, verbose=True, use_saved_file=False):
     line = 0;
 
     # for each anime's set of reviews
-    for desc in corpus[0:5]: 
+    for desc in corpus: 
         if (verbose): print('loading: {}/{}'.format(line, len(corpus)), end='\r')
         # Word vectors are of zero length (Used 300 dimensions)
         sent_vec = np.zeros(300) 
@@ -253,23 +253,21 @@ def recommendations(title, df, cosine_similarities):
 def main():
     df = preprocess_data(use_saved_file=True)
 
+    # if you need to retrain or don't have the saved .data file, set use_saved_file to False
     cosine_similarities = train_word2vec(df, use_saved_file=True)
 
     # Checking time for recommendations call, average 0.03 seconds
-    print("Recommendations using average word2vec:")
+    print("\nRecommendations using average word2vec:")
     s=time.time()
     recommendations('cowboy_bebop', df, cosine_similarities)
     e=time.time()
     print(e-s)  
 
-    tfidf_cosine_similarities = train_tfidf_word2vec(df, verbose=True, use_saved_file=False)
+    # if you need to retrain or don't have the saved .data file, set use_saved_file to False
+    tfidf_cosine_similarities = train_tfidf_word2vec(df, use_saved_file=False)
 
-    # Checking time for recommendations call, average 0.03 seconds
-    print("Recommendations using tfidf word2vec:")
-    s=time.time()
-    recommendations('naruto__shippuuden_movie_5_-_blood_prison', df, tfidf_cosine_similarities)
-    e=time.time()
-    print(e-s)  
+    print("\nRecommendations using tfidf word2vec:")
+    recommendations('cowboy_bebop', df, tfidf_cosine_similarities)
 
 if __name__ == "__main__":
     main()
