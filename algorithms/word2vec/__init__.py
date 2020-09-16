@@ -251,6 +251,7 @@ def recommendations(title, df, cosine_similarities):
         count += 1
 
 def main():
+    # if you don't have review_df.pkl, set use_saved_file to False (needed for first time use)
     df = preprocess_data(use_saved_file=True)
 
     # if you need to retrain or don't have the saved .data file, set use_saved_file to False
@@ -264,7 +265,7 @@ def main():
     print(e-s)  
 
     # if you need to retrain or don't have the saved .data file, set use_saved_file to False
-    tfidf_cosine_similarities = train_tfidf_word2vec(df, use_saved_file=False)
+    tfidf_cosine_similarities = train_tfidf_word2vec(df, use_saved_file=True)
 
     print("\nRecommendations using tfidf word2vec:")
     recommendations('cowboy_bebop', df, tfidf_cosine_similarities)
