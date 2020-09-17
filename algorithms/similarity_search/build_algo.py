@@ -19,7 +19,7 @@ corpus = list()
 
 for index, review_doc in enumerate(os.listdir(reviews_dir)):
     # We use this dictionary later to know the column of each anime in the tf-idf vectors matrix
-    code_to_row.update({review_doc[:-4]: index})
+    code_to_row.update({review_doc.split(".")[0]: index})
     f = open(os.path.join(reviews_dir, review_doc), 'r', encoding="utf-8")
     corpus.append(f.read())
     f.close()
