@@ -270,5 +270,5 @@ def main():
     print("\nRecommendations using tfidf word2vec:")
     recommendations('cowboy_bebop', df, tfidf_cosine_similarities)
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
