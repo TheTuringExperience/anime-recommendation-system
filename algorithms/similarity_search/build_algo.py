@@ -8,17 +8,18 @@ from annoy import AnnoyIndex
 import numpy as np
 
 # After making some analysis I found the most requent words in the reviews corpus and added them to the sklearn stop words list
-my_stop_words = text.ENGLISH_STOP_WORDS.union(['one', 'anime', 'like', 'characters', 'story', 'show', 'really', 'character', 'series', 'even', 'much',
-                                               'first', 'also', 'good', 'would', 'get', 'well', 'time', 'season', 'main', 'still', 'great', 'see', 'many', 'make', 'way', 'people', 'every', 'plot'])
+my_stop_words = text.ENGLISH_STOP_WORDS.union(['like', 'anime', 'one', 'characters', 'really', 'story', 'show', 'character', 'series', 'even',
+                                               'first', 'much', 'good', 'also', 'would', 'get', 'well', 'main', 'time', 'still', 'see', 'make', 
+                                               'season', 'plot', 'movie', 'pretty', 'episode'])
 
 # TODO: Find a way to not have to hard code the path
 reviews_dir = "../../data/reviews"
-code_to_column = dict() 
+code_to_row = dict() 
 corpus = list()
 
 for index, review_doc in enumerate(os.listdir(reviews_dir)):
     # We use this dictionary later to know the column of each anime in the tf-idf vectors matrix
-    code_to_column.update({review_doc: index})
+    code_to_row.update({review_doc[:-4]: index})
     f = open(os.path.join(reviews_dir, review_doc), 'r', encoding="utf-8")
     corpus.append(f.read())
     f.close()
@@ -33,7 +34,7 @@ for i, x in enumerate(X):
 
 annoyIndex.build(5)  # 5 trees
 
-# Save the code_to_column dict, the matrix of tf_idf vectors and the hsnw index to disk
-pickle.dump(code_to_column, open("code_to_column.pkl", "wb"))
+# Save the code_to_row dict, the matrix of tf_idf vectors and the hsnw index to disk
+pickle.dump(code_to_row, open("code_to_row.pkl", "wb"))
 np.save("tf_idf_matrix.npy", X)
 annoyIndex.save('index.ann')

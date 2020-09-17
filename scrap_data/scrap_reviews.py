@@ -14,9 +14,8 @@ num_reviews = 40
 
 jikan = Jikan()
 
-#scrap the reviews for the first 1000
-for index, row in codes_df[0:1000].iterrows():
-    # Put an upper bound on the amoun of reviews to reduce the inbalance problem
+for index, row in codes_df[1238:].iterrows():
+    # Put an upper bound on the amount of reviews to reduce the data inbalance problem
     try:
         reviews = jikan.anime(row["code"], extension='reviews')['reviews'][:num_reviews]
     
@@ -27,7 +26,7 @@ for index, row in codes_df[0:1000].iterrows():
 
     except Exception as e:
         logging.error(f"Problems getting data for {row['name']}: " + str(e))
-
+        
     #if the anime has no reviews then there is no point in making a file for it
     if reviews:
         with open(f"../data/reviews/{row['code']}.txt", "w", encoding="utf-8") as f:
@@ -37,4 +36,4 @@ for index, row in codes_df[0:1000].iterrows():
     else:
         logging.error(f"No reviews available for {row['name']}")
         continue
-    
+    time.sleep(randint(4,5))
