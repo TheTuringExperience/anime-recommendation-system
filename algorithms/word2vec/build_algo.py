@@ -254,8 +254,8 @@ def main():
     # if you need to retrain or don't have the saved .data file, set use_saved_file to False
     # tfidf_cosine_similarities = train_tfidf_word2vec(df, use_saved_file=False)
 
-    # print("\nRecommendations using tfidf word2vec:")
-    # recommendations('cowboy bebop', df, tfidf_cosine_similarities)
+    print("\nRecommendations using tfidf word2vec:")
+    recommendations('cowboy bebop', df, tfidf_cosine_similarities)
 
 if __name__ == "__main__":
     main()
