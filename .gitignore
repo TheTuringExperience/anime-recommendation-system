@@ -6,3 +6,5 @@ __pycache__/
 *.npy
 *.ann
 *.gz
+*.pkl
+algorithms/word2vec/review_df.pkl
