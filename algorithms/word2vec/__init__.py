@@ -1,6 +1,6 @@
-
-import pandas as pd
+from typing import List
 import pickle 
+import pandas as pd
 
 with open('./algorithms/word2vec/w2v_cosine_sim.data', 'rb') as filehandle:
             # read the data as binary data stream
@@ -8,7 +8,7 @@ with open('./algorithms/word2vec/w2v_cosine_sim.data', 'rb') as filehandle:
 
 df = pd.read_pickle("./algorithms/word2vec/review_df.pkl") 
 
-def similarity_recommendator(title):
+def similarity_recommendator(title: str) -> List[str]:
     
     # taking the title and rating to store in new data frame called animes
     animes = df[['name', 'rating']]

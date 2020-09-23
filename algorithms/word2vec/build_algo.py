@@ -5,28 +5,19 @@ import nltk
 
 nltk.download('stopwords')
 from nltk.corpus import stopwords
-from sklearn.metrics.pairwise import linear_kernel
-from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.tokenize import RegexpTokenizer
 
 import re
-import string
-import random
 import pickle
 import os
-import requests
 import time
-from io import BytesIO
 
-import matplotlib.pyplot as plt
 from sklearn.metrics.pairwise import cosine_similarity
 from gensim.models import Word2Vec
-from gensim.models.phrases import Phrases, Phraser
-from matplotlib import pyplot
 from gensim.models import KeyedVectors
 
-def preprocess_data(use_saved_file=False):
+def preprocess_data(use_saved_file: bool = False):
     if (use_saved_file): 
         df = pd.read_pickle("./review_df.pkl") 
         return df
@@ -89,11 +80,13 @@ def preprocess_data(use_saved_file=False):
     df['cleaned'] = df.cleaned.apply(func=remove_punctuation)
     df['cleaned'] = df.cleaned.apply(func=remove_html)
     df.name = df.name.apply(lambda x: re.sub(r"\s\s*", " ", re.sub(r"[\-\_]", " ", x)) )
-    df.to_pickle("./review_df.pkl")
+    with open("./review_df.pkl", "wb") as filehandle:
+        pickle.dump(df, filehandle)
+        filehandle.close()
 
     return df
 
-def train_word2vec(df, use_saved_file=False):
+def train_word2vec(df: pd.DataFrame, use_saved_file: bool=False):
     if (use_saved_file): 
         with open('w2v_cosine_sim.data', 'rb') as filehandle:
             # read the data as binary data stream
@@ -124,7 +117,7 @@ def train_word2vec(df, use_saved_file=False):
     google_model.train(corpus, total_examples=google_model.corpus_count, epochs = 5)
 
     # Generate the average word2vec for the each set of anime reviews
-    def vectors(x):
+    def vectors(x: pd.DataFrame):
         
         # Creating a list for storing the vectors (description into vectors)
         global array_embeddings
@@ -159,7 +152,7 @@ def train_word2vec(df, use_saved_file=False):
 
     return cosine_similarities
 
-def train_tfidf_word2vec(df, verbose=True, use_saved_file=False):
+def train_tfidf_word2vec(df: pd.DataFrame, verbose:bool =True, use_saved_file:bool =False):
     if (use_saved_file): 
         with open('tfidf_w2v_cosine_sim.data', 'rb') as filehandle:
             # read the data as binary data stream
@@ -230,7 +223,7 @@ def train_tfidf_word2vec(df, verbose=True, use_saved_file=False):
     
     return cosine_similarities
 
-def recommendations(title, df, cosine_similarities):
+def recommendations(title: str, df: pd.DataFrame, cosine_similarities: bool):
     
     # taking the title and rating to store in new data frame called animes
     animes = df[['name', 'rating']]
@@ -253,10 +246,10 @@ def recommendations(title, df, cosine_similarities):
 
 def main():
     # if you don't have review_df.pkl, set use_saved_file to False (needed for first time use)
-    df = preprocess_data(use_saved_file=True)
+    df = preprocess_data(use_saved_file=False)
 
     # if you need to retrain or don't have the saved .data file, set use_saved_file to False
-    cosine_similarities = train_word2vec(df, use_saved_file=True)
+    cosine_similarities = train_word2vec(df, use_saved_file=False)
 
     # if you need to retrain or don't have the saved .data file, set use_saved_file to False
     # tfidf_cosine_similarities = train_tfidf_word2vec(df, use_saved_file=False)
