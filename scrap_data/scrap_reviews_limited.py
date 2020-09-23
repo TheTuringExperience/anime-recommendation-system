@@ -11,13 +11,13 @@ logging.basicConfig(level=logging.ERROR)
 
 codes_df = pd.read_csv("../data/anime_codes.csv")
 num_reviews = 40
-num_anime = 1000
-time_between_requests = 2  # in seconds
+lower_bound = 2724
+time_between_requests = 3  # in seconds
 
 jikan = Jikan()
 
-#scrap the reviews for the first 1000
-for index, row in codes_df[0:num_anime].iterrows():
+#scrap the reviews starting from the lower_bound
+for index, row in codes_df[lower_bound:lower_bound+1000].iterrows():
     # Put an upper bound on the amoun of reviews to reduce the inbalance problem
     try:
         reviews = jikan.anime(row["code"], extension='reviews')['reviews'][:num_reviews]
@@ -55,5 +55,3 @@ for index, row in codes_df[0:num_anime].iterrows():
     else:
         logging.error(f"No reviews available for {row['name']}")
         continue
-
-    
