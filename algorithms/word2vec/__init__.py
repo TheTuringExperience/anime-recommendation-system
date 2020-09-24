@@ -11,7 +11,7 @@ df = pd.read_pickle("./algorithms/word2vec/review_df.pkl")
 def similarity_recommendator(title: str) -> List[str]:
     
     # taking the title and rating to store in new data frame called animes
-    animes = df[['name', 'rating']]
+    animes = df[['name', 'code']]
 
     #Reverse mapping of the index
     indices = pd.Series(df.index, index = df['name']).drop_duplicates()# Recommending the Top 5 similar animes
@@ -26,4 +26,4 @@ def similarity_recommendator(title: str) -> List[str]:
     anime_indices = [i[0] for i in sim_scores]
     recommend = animes.iloc[anime_indices]
 
-    return recommend['name'].tolist()        
+    return recommend['code'].tolist()        

@@ -4,23 +4,28 @@ import os
 import json
 import pickle
 from collections import defaultdict
+import pandas as pd
 from typing import List, Dict
 from algorithms import *
 
 
-with open("data/codes_lookup_table.json", "r") as j:
-    codes_lookup_table = json.load(j)
-    j.close()
+anime_info_df = pd.read_csv("data/anime_data.csv", encoding="utf-8")
 
-names_lookup_table = {name: code for code, name in codes_lookup_table.items()}
+relevant_fields = ['full_title', 'code', 'score', 'image_url', 'synopsis', 'type']
 
 def obtain_recommendations(names: List[str], method: str) -> Dict[str, List[str]]:
     # TODO Scrap the anime data with the code as file name instead of the anime name
     recom = defaultdict(list)
     for name in names:        
         try:
-            recom.update({name:recommender_algorithms[method](name.strip())})
+            #get the codes of the recommendations from the algorithm
+            recommendation_codes = recommender_algorithms[method](name.strip())  
+            #use the codes to find the extra information of each anime
+            recommendations_info = [anime_info_df.loc[anime_info_df["code"] == code][relevant_fields].to_dict(
+                'records')[0] for code in recommendation_codes]
+            recom.update({name: recommendations_info})
+
         except:
             continue    
-
+        
     return {"recommendations":recom}

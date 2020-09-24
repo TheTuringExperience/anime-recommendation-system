@@ -14,7 +14,7 @@ async def main(user_name: str = Query(None), anime_names: List[str] = Query([]))
     if anime_names and anime_names[0].strip():
         recommendations = obtain_recommendations(
             anime_names, "similarity_search")
-        return recommendations
+        return JSONResponse(content=recommendations, status_code=200)
 
     return JSONResponse(content={"missing": "parameters"}, status_code=400)
 
