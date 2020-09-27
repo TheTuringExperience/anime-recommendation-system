@@ -11,13 +11,13 @@ logging.basicConfig(level=logging.ERROR)
 
 codes_df = pd.read_csv("../data/anime_codes.csv")
 num_reviews = 40
-lower_bound = 2724
+offset = 5218
 time_between_requests = 3  # in seconds
 
 jikan = Jikan()
 
 #scrap the reviews starting from the lower_bound
-for index, row in codes_df[lower_bound:lower_bound+1000].iterrows():
+for index, row in codes_df[offset:offset+1000].iterrows():
     # Put an upper bound on the amoun of reviews to reduce the inbalance problem
     try:
         reviews = jikan.anime(row["code"], extension='reviews')['reviews'][:num_reviews]
@@ -32,6 +32,7 @@ for index, row in codes_df[lower_bound:lower_bound+1000].iterrows():
             print("Retrying after 15 seconds...")
             time.sleep(15)
             reviews = jikan.anime(row["code"], extension='reviews')['reviews'][:num_reviews]
+
         except APIException as e:
             #If myanimelist refuses the connection stop the scrapping and resume some time later
             logging.error(f"The server did not respond again when scrapping {index}: " + str(e))
