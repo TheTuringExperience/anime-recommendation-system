@@ -1,62 +1,43 @@
-""" Obtains the id codes for all the animes listed in myAnimeList and separetes them by genre in .csv files,
-but there is overlap due to animes with multiple genres"""
+"""Uses the jikanpy api to scrap the code, name and rating for the animes in each genre in the myanimelist website and stores 
+that information in a .csv file named after the genre, however there is overlap due to animes with multiple genres"""
 
-from bs4 import BeautifulSoup
-from requests import get
-import re
-import os
-from time import time
+import time
+from collections import namedtuple
+import pandas as pd
+from jikanpy import Jikan
+from jikanpy.exceptions import APIException
 
-genres = []
-genres_directory_path = "../data/anime_codes_by_genre"
+animeEntry = namedtuple("Anime", "code name rating")
 
-with open("genres_list.txt", "r") as f:
-    lines = f.readlines()
-    for line in lines:
-        genres.append(line.strip().replace(" ", "_"))
+jikan = Jikan()
+num_genres = 43  # the amount of anime genres in myanimelist.com at the moment
+waiting_time = 3  # how long to wait between requests
 
-for genre_inx in range(1, len(genres)+1):
-    page = 0
-    anime_data = list()
-    start = time()
-
+for genre_id in range(1, num_genres+1):
+    page_count = 0
+    animes_in_genre = []
     while True:
-        page += 1
-        url = f"https://myanimelist.net/anime/genre/{genre_inx}?page={page}"
-        response = get(url=url)
-        # since we dont know how many pages there are just keep going until you get a 404 response code
-        if response.status_code == 404:
+        try:
+            page_count += 1
+            time.sleep(waiting_time)
+            response = jikan.genre(
+                genre_id=genre_id, type="anime", page=page_count)
+            animes = response.get("anime")
+
+            for anime in animes:
+                code = anime.get("mal_id")
+                name = anime.get("url", "").split("/")[-1].lower()
+                score = anime.get("score")
+                animes_in_genre.append(animeEntry(code, name, score))
+
+        except APIException as e:
+            print("There are no more pages for this genre skipping to the next one")
             break
-        soup = BeautifulSoup(response.content, "html.parser")
-        anime_cards = soup.find_all(
-            'div', {'class': re.compile('seasonal-anime js-seasonal-anime')})
 
-        for anime_card in anime_cards:
-            # get the id of the anime from its url
-            anime_url = anime_card.find(
-                'p', class_="title-text").find('a')['href']
-            anime_code = re.search(
-                "https://myanimelist.net/anime/(\d+)/(.+)", anime_url)
-
-            # get the rating of the anime
-            anime_rating = anime_card.find(
-                'span', title="Score").text.strip()
-
-            # Making sure that the anime is rated
-            if anime_rating.strip() != "N/A":
-                anime_data.append(
-                    [anime_code.groups()[0], anime_code.groups()[1].lower(), anime_rating])
-
-    # get the name of the genre from the title tag
-    genre = soup.find('title').text.split("-")[0].strip()
-    file_path = os.path.join(genres_directory_path, genre + ".csv")
-    print(f"time spent scrapping {genre} animes: {str(time() - start)}")
-
-    # sort the anime codes list by the rating
-    anime_data.sort(key=lambda x: x[2], reverse=True)
-
-    with open(file_path, "w", encoding="utf-8") as f:
-        f.write("code,name,rating\n")
-        for data in anime_data:
-            f.write(",".join(data) + "\n")
-        f.close()
+    genre_name = " ".join(response.get("mal_url", {}).get("name").split()[:-1])
+    genre_df = pd.DataFrame(data=animes_in_genre)
+    genre_df.dropna(inplace=True)
+    genre_df.sort_values(by=["rating"], ascending=False, inplace=True)
+    genre_df.to_csv(
+        f"../data/anime_codes_by_genre/{genre_name}.csv", index=False)
+    print(f"Saved the animes in the {genre_name} genre")
