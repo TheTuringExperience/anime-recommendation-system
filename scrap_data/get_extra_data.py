@@ -13,6 +13,7 @@ jikan = Jikan()
 
 animes_df = pd.read_csv("../data/anime_codes.csv", encoding="utf-8")
 
+season_to_month = {"Winter": "01", "Spring": "04", "Summer": "07", "Fall":"10"}
 
 def convert_to_date(anime_season: str):
     if isinstance(anime_season, str):
