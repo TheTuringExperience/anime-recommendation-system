@@ -1,4 +1,4 @@
-""" Creates the files needed to run the soft_culstering recommender system """
+""" Creates the files needed to run the soft_culstering recommender algorithm"""
 
 import os
 import re
@@ -7,37 +7,30 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import OneHotEncoder
 
-files_path = "../../data/anime_codes_by_genre/"
-#list all the .csv in that path
-anime_files = os.listdir(files_path)
+anime_data_path = "../../data/anime_data.csv"
 
-#create a list of the available genres
-anime_genres = [file.lower().split(".")[0] for file in anime_files]
+animes_df = pd.read_csv(anime_data_path, encoding="utf-8")[["name", "code", "premiered", "genres"]]
 
-#create a one_hot encoded representation of the genres
+#create a list of genres using the "genres" column in the animes_df
+genres = list({genre  for genres_list in animes_df.genres.tolist() 
+                        for genre in genres_list.split(";")})
+
+#create a one_hot encoded representation of each genre
 one_hot = OneHotEncoder(handle_unknown="ignore")
-one_hot.fit([[genre] for genre in anime_genres])
+one_hot.fit([[genre] for genre in genres])
+
+def get_genres_vector(genres_str: str):
+    """returns the sum of the one-hot representations of the genres"""
+    genres = genres_str.split(";")
+    genres_vector = sum([one_hot.transform([[genre]]).toarray() for genre in genres])[0]
+    return genres_vector
 
 def main():
-    #create a dict where the key is the anime name and the value is a one_hot representation of it's genres
-    global animes_with_genres, name_to_code
-    animes_with_genres = dict()
-    name_to_code = dict()
-    for file_name in anime_files:
-        #load the csv of the file and filter out the animes with and score lower than 6.5
-        current_df = pd.read_csv(os.path.join(files_path, file_name), encoding="utf-8")
-        current_df = current_df[current_df.rating >= 6.5]   
-        for name, code in current_df[["name", "code"]].values.tolist():
-            cleaned_name = re.sub(r"\s\s+", " ", re.sub(r"[\_+-]", " ", name))
-            name_to_code.update({cleaned_name: code})
-            #each time you find the name of an anime in the csv for a genre add the one_hot representation \
-            # of the genre to the existing vector for that anime
-            animes_with_genres.setdefault(code, np.zeros((1,len(anime_files))))
-            genre = file_name.lower().split(".")[0]
-            animes_with_genres[code] += one_hot.transform([[genre]]).toarray()    
+    animes_df["genres"] = animes_df.genres.apply(get_genres_vector)
+    #process the anime names to remove underscores
+    animes_df["name"] = animes_df.name.apply(lambda x: re.sub(r"\s\s+", " ", re.sub(r"[\_+-]", " ", x)))
 
 if __name__ == "__main__":
     main()
     #save the dict as a binary pickle file
-    pickle.dump(animes_with_genres, open("./anime_genres.pickle", "wb"))
-    pickle.dump(name_to_code, open("./name_to_code.pickle", "wb"))
+    animes_df.to_pickle("./anime_genres_df.pkl")
