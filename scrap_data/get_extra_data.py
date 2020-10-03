@@ -13,11 +13,22 @@ jikan = Jikan()
 
 animes_df = pd.read_csv("../data/anime_codes.csv", encoding="utf-8")
 
+
+def convert_to_date(anime_season: str):
+    if isinstance(anime_season, str):
+        season, year = anime_season.split(" ")
+        month = season_to_month[season]
+        airing_date = "/".join(["01", month, year])
+        return airing_date
+    return None
+
 def extract_fields(reponse: Dict) -> List:
     fields = [reponse.get("image_url", ""), reponse.get("synopsis", ""), reponse.get("title", ""),
                 reponse.get("popularity", ""), reponse.get("members", ""), reponse.get("scored_by", ""),
-                reponse.get("type", ""), reponse.get("rating", ""), reponse.get("premiered", ""), 
-                ";".join([studio.get("name", "") for studio in reponse.get("studios", [])])]
+                reponse.get("type", ""), reponse.get("rating", ""), reponse.get("premiered", ""),             
+                ";".join([studio.get("name", "") for studio in reponse.get("studios", [])]),
+                ";".join([genre.get(name"name", "").lower() for genre in reponse.get("genres", [])])
+            ]
 
     return fields
 
@@ -63,7 +74,8 @@ def main():
     extra_info_df = pd.DataFrame(data = animes_info, columns=["code", "name", "score", "image_url", 
                                                                 "synopsis", "full_title", "popularity", 
                                                                 "members", "scored_by", "type", "rating",
-                                                                "premiered", "studios"])
+                                                                "premiered", "studios", "genres"])
+    extra_info_df["premiered"] = extra_info_df.premiered.apply(convert_to_date)
     extra_info_df.to_csv("../data/anime_data.csv", index=False)
 
 if __name__ == "__main__":
