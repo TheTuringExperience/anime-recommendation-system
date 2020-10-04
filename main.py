@@ -10,10 +10,10 @@ api = FastAPI()
 animes_df = pd.read_csv("data/anime_codes.csv")
 
 @api.get("/api/v1/get_recommendations")
-async def main(user_name: str = Query(None), anime_names: List[str] = Query([])):
-    if anime_names and anime_names[0].strip():
+async def main(user_name: str = Query(None), anime_name: str = Query([])):
+    if anime_name:
         recommendations = obtain_recommendations(
-            anime_names)
+            anime_name)
         return JSONResponse(content=recommendations, status_code=200)
 
     return JSONResponse(content={"missing": "parameters"}, status_code=400)
