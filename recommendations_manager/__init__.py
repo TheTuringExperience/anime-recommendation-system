@@ -22,7 +22,7 @@ def obtain_recommendations(name: str) -> Dict[str, List[str]]:
     recom["similarly_described"] = similar
     recom["hot"] = hot
 
-    return {"recommendations":recom}
+    return recom
 
 def get_info_from_code(codes: List[int]):
     recommendations_info = [anime_info_df.loc[anime_info_df["code"] == code][relevant_fields].to_dict(
