@@ -9,7 +9,7 @@ from sklearn.preprocessing import OneHotEncoder
 
 anime_data_path = "../../data/anime_data.csv"
 
-animes_df = pd.read_csv(anime_data_path, encoding="utf-8")[["name", "code", "premiered", "genres"]]
+animes_df = pd.read_csv(anime_data_path, encoding="utf-8")[["name", "score", "code", "premiered", "genres"]]
 
 #create a list of genres using the "genres" column in the animes_df
 genres = list({genre  for genres_list in animes_df.genres.tolist() 
@@ -29,6 +29,8 @@ def main():
     animes_df["genres"] = animes_df.genres.apply(get_genres_vector)
     #process the anime names to remove underscores
     animes_df["name"] = animes_df.name.apply(lambda x: re.sub(r"\s\s+", " ", re.sub(r"[\_+-]", " ", x)))
+    #round up the score
+    animes_df["score"] = animes_df.score.apply(lambda x: round(x))
 
 if __name__ == "__main__":
     main()
