@@ -19,11 +19,13 @@ def obtain_recommendations(name: str) -> Dict[str, List[str]]:
     similar = get_info_from_code(recommender_algorithms["similarity_search"](name.strip()))
     hot = get_info_from_code(recommender_algorithms["soft_clustering"](name.strip(), "premiered"))
     beloved = get_info_from_code(recommender_algorithms["soft_clustering"](name.strip(), "score"))
+    similar_synopsis = get_info_from_code(recommender_algorithms["synopsis_similarity"](name.strip()))
     
     #assing each group of recommendations to its respective row
     recom["similarly_described"] = similar
     recom["hot"] = hot
     recom["beloved"] = beloved
+    recom["similar_synopsis"] = similar_synopsis
 
     return recom
 
