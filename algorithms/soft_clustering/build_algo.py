@@ -19,6 +19,16 @@ genres = list({genre  for genres_list in animes_df.genres.tolist()
 one_hot = OneHotEncoder(handle_unknown="ignore")
 one_hot.fit([[genre] for genre in genres])
 
+season_to_month = {"Winter": "01", "Spring": "04", "Summer": "07", "Fall": "10"}
+
+def convert_to_date(anime_season: str):
+    if isinstance(anime_season, str):
+        season, year = anime_season.split(" ")
+        month = season_to_month[season]
+        airing_date = "/".join(["01", month, year])
+        return airing_date
+    return None
+
 def get_genres_vector(genres_str: str):
     """returns the sum of the one-hot representations of the genres"""
     genres = genres_str.split(";")
@@ -31,6 +41,8 @@ def main():
     animes_df["name"] = animes_df.name.apply(lambda x: re.sub(r"\s\s+", " ", re.sub(r"[\_+-]", " ", x)))
     #round up the score
     animes_df["score"] = animes_df.score.apply(lambda x: round(x))
+    #convert to and appropiate date format
+    animes_df["premiered"] = animes_df.premiered.apply(convert_to_date)
 
 if __name__ == "__main__":
     main()
