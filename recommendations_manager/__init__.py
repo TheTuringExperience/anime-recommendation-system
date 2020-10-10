@@ -11,7 +11,7 @@ from algorithms import *
 
 anime_info_df = pd.read_csv("data/anime_data.csv", encoding="utf-8")
 
-relevant_fields = ['full_title', 'code', 'score', 'image_url', 'synopsis', 'type']
+relevant_fields = ['full_title', 'code', 'score', 'image_url', 'synopsis', 'premiered', 'type']
 
 def obtain_recommendations(name: str) -> Dict[str, List[str]]:
     recom = defaultdict(list)    
