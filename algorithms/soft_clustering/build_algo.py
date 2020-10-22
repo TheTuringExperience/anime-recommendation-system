@@ -22,7 +22,7 @@ one_hot.fit([[genre] for genre in genres])
 season_to_month = {"Winter": "01", "Spring": "04", "Summer": "07", "Fall": "10"}
 
 def convert_to_date(anime_season: str):
-    if isinstance(anime_season, str):
+    if isinstance(anime_season, str) and anime_season != "Not available":
         season, year = anime_season.split(" ")
         month = season_to_month[season]
         airing_date = "/".join(["01", month, year])
