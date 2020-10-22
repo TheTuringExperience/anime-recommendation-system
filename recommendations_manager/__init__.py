@@ -30,6 +30,10 @@ def obtain_recommendations(name: str) -> Dict[str, List[str]]:
     return recom
 
 def get_info_from_code(codes: List[int]):
-    recommendations_info = [anime_info_df.loc[anime_info_df["code"] == code][relevant_fields].to_dict(
-        'records')[0] for code in codes]
+    recommendations_info = []
+    for code in codes:
+        try:
+            recommendations_info.append(anime_info_df.loc[anime_info_df["code"] == code][relevant_fields].to_dict('records')[0])
+        except: 
+            continue
     return recommendations_info
