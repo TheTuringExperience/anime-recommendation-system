@@ -5,7 +5,7 @@ import time
 import logging
 from typing import Dict, List
 import pandas as pd
-from pprint import pprint
+
 from jikanpy import Jikan
 from jikanpy.exceptions import APIException
 
@@ -23,24 +23,22 @@ def extract_fields(reponse: Dict) -> List:
 
     return fields
 
-def get_extra_information() -> List:
+def get_extra_information(animes_info: List) -> List:
     data = []
     time_between_requests = 3
 
-    for index, row in animes_df.iterrows():
-        anime_code = row["code"]
+    for code, name, score in animes_info:
+        anime_code = code
         try:
             reponse = jikan.anime(anime_code)    
             time.sleep(time_between_requests)  # wait before making too many requests as per API guidelines
             
-            current_row = row.tolist() + extract_fields(reponse)
-            print(current_row)    
-            exit()
-            data.append(current_row)
+            current_row = [code, name, score] + extract_fields(reponse)
+            data.append(current_row)           
 
         except APIException as e:
             #If myanimelist refuses the connection stop the scrapping and resume some time later
-            logging.error(f"The server did not respond when scrapping {index}: " + str(e))
+            logging.error(f"The server did not respond when scrapping {name}: " + str(e))
             
             try:
                 print("Retrying after 15 seconds...")
@@ -53,22 +51,26 @@ def get_extra_information() -> List:
 
             except APIException as e:
                 #If myanimelist refuses the connection stop the scrapping and resume some time later
-                logging.error(f"The server did not respond again when scrapping {index}: " + str(e))
+                logging.error(f"The server did not respond again when scrapping {name}: " + str(e))
                 continue 
                 
         except Exception as e:
-            logging.error(f"Problems getting data for {row['name']}: " + str(e))
+            logging.error(f"Problems getting data for {name}: " + str(e))
             continue
 
     return data
 
+def store_info(animes_info: List):
+    extra_info_df = pd.DataFrame(data=animes_info, columns=["code", "name", "score", "image_url",
+                                                            "synopsis", "full_title", "popularity",
+                                                            "members", "scored_by", "type", "rating",
+                                                            "premiered", "studios", "genres"])
+    extra_info_df.fillna("Not available", inplace=True)
+    extra_info_df.to_csv("../data/new_season.csv", mode="a", index=False)
+
 def main():
-    animes_info = get_extra_information()
-    extra_info_df = pd.DataFrame(data = animes_info, columns=["code", "name", "score", "image_url", 
-                                                                "synopsis", "full_title", "popularity", 
-                                                                "members", "scored_by", "type", "rating",
-                                                                "premiered", "studios", "genres"])    
-    extra_info_df.to_csv("../data/anime_data.csv", index=False)
+    animes_info = get_extra_information(animes_df.to_numpy().tolist())
+    store_info(anime_info)
 
 if __name__ == "__main__":
     main()
