@@ -23,7 +23,7 @@ def preprocess_data(use_saved_file: bool = False):
         return df
 
     # Reading the data
-    code_df = pd.read_csv("../../data/anime_codes.csv")
+    code_df = pd.read_csv("../../data/anime_data.csv")[["code", "name", "score"]]
 
     # Read the review data
     reviews_dir = "../../data/reviews"
@@ -45,7 +45,7 @@ def preprocess_data(use_saved_file: bool = False):
     # Create a dataframe of the anime codes and their respective reviews
     review_df = pd.DataFrame(all_reviews)
 
-    # Match the name and rating of animes in code_df to the anime reviews dataframe
+    # Match the name and score of animes in code_df to the anime reviews dataframe
     review_df['code']=review_df['code'].astype(int)
     df = pd.merge(review_df, code_df, on='code')
 
@@ -225,8 +225,8 @@ def train_tfidf_word2vec(df: pd.DataFrame, verbose:bool =True, use_saved_file:bo
 
 def recommendations(title: str, df: pd.DataFrame, cosine_similarities: bool):
     
-    # taking the title and rating to store in new data frame called animes
-    animes = df[['name', 'rating']]
+    # taking the title and score to store in new data frame called animes
+    animes = df[['name', 'score']]
 
     #Reverse mapping of the index
     indices = pd.Series(df.index, index = df['name']).drop_duplicates()# Recommending the Top 5 similar animes
@@ -241,7 +241,7 @@ def recommendations(title: str, df: pd.DataFrame, cosine_similarities: bool):
     
     count = 0
     for index, row in recommend.iterrows():
-        print('{}. {}, similarity: {}, rating: {}'.format(count+1, row['name'], sim_scores[count][1], row['rating']))
+        print('{}. {}, similarity: {}, score: {}'.format(count+1, row['name'], sim_scores[count][1], row['score']))
         count += 1
 
 def main():
