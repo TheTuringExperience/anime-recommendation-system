@@ -7,7 +7,7 @@ from recommendations_manager import obtain_recommendations
 
 api = FastAPI()
 
-animes_df = pd.read_csv("data/anime_codes.csv")
+anime_names = pd.read_csv("data/anime_data.csv")["name"].tolist()
 
 @api.get("/api/v1/get_recommendations")
 async def main(user_name: str = Query(None), anime_name: str = Query([])):
@@ -20,5 +20,5 @@ async def main(user_name: str = Query(None), anime_name: str = Query([])):
 
 @api.get("/api/v1/get_names")
 async def get_names():    
-    names = {"names":animes_df["name"].apply(lambda x: re.sub(r"\s\s*", " ", re.sub(r"[\-\_]", " ", x))).tolist()}
+    names = {"names": [re.sub(r"\s\s*", " ", re.sub(r"[\-\_]", " ", name)) for name in anime_names]}
     return names
