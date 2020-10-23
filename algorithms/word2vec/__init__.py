@@ -1,30 +1,34 @@
 from typing import List
 import pickle 
+import scipy
 import pandas as pd
 
-with open('./algorithms/word2vec/w2v_cosine_sim.data', 'rb') as filehandle:
+with open('./algorithms/word2vec/w2v_embeddings.data', 'rb') as filehandle:
             # read the data as binary data stream
-            cosine_similarities = pickle.load(filehandle)    
+            embeddings = pickle.load(filehandle)    
 
 df = pd.read_pickle("./algorithms/word2vec/review_df.pkl") 
 
 def similarity_recommendator(title: str) -> List[str]:
     try:
-        # taking the title and rating to store in new data frame called animes
-        animes = df[['name', 'code']]
+        # taking the title and score to store in new data frame called animes
+        animes_df = df[['name', 'code']]
 
         #Reverse mapping of the index
-        indices = pd.Series(df.index, index = df['name']).drop_duplicates()# Recommending the Top 5 similar animes
+        indices = pd.Series(animes_df.index, index = animes_df['name']).drop_duplicates()# Recommending the Top 5 similar animes
         # drop all duplicate occurrences of the labels 
         indices = indices.groupby(indices.index).first()
 
         idx = indices[title]
-        sim_scores = sorted(list(enumerate(cosine_similarities[idx])), key = lambda x: x[1], reverse = True)
-        sim_scores = [score for score in sim_scores[0:6] if score[0] != idx]
+        query_embedding = embeddings[idx]
         
-        anime_indices = [i[0] for i in sim_scores]
-        recommendations = animes.iloc[anime_indices]["code"].tolist()
+        closest_n = 5    
+        distances = scipy.spatial.distance.cdist([query_embedding], embeddings, "cosine")[0]
 
+        results = zip(range(len(distances)), distances)
+        results = sorted(results, key=lambda x: x[1])
+        recommendations = animes_df.iloc[[idx for idx, _ in results[1:closest_n+1] ]].code.tolist()
+        
         return recommendations
     except:
         return []
