@@ -1,23 +1,30 @@
 import os
 import re
 import time
+from argparse import ArgumentParser
+
 from random import randint
 import logging
+
 import pandas as pd
 from jikanpy.exceptions import APIException
 from jikanpy import Jikan
 
 logging.basicConfig(level=logging.ERROR)
 
-codes_df = pd.read_csv("../data/anime_codes.csv")
+parser = ArgumentParser()
+parser.add_argument("-s", "--source", help="Source file containing the data of the animes to scrap the reviews of")
+
+args = vars(parser.parse_args())
+
+codes_df = pd.read_csv(f"{args['source']}")
 num_reviews = 40
-offset = 5218
 time_between_requests = 3  # in seconds
 
 jikan = Jikan()
 
 #scrap the reviews starting from the lower_bound
-for index, row in codes_df[offset:offset+1000].iterrows():
+for index, row in codes_df.iterrows():
     # Put an upper bound on the amoun of reviews to reduce the inbalance problem
     try:
         reviews = jikan.anime(row["code"], extension='reviews')['reviews'][:num_reviews]
