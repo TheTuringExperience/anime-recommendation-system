@@ -10,7 +10,7 @@ api = FastAPI()
 anime_names = pd.read_csv("data/anime_data.csv")["name"].tolist()
 
 @api.get("/api/v1/get_recommendations")
-async def main(user_name: str = Query(None), anime_name: str = Query([])):
+async def main(anime_name: str = Query([])):
     if anime_name:
         recommendations = obtain_recommendations(
             anime_name)
