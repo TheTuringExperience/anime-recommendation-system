@@ -32,8 +32,13 @@ def get_extra_information(animes_info: List) -> List:
         try:
             reponse = jikan.anime(anime_code)    
             time.sleep(time_between_requests)  # wait before making too many requests as per API guidelines
+           
+            extra_data = extract_fields(reponse)
+            #Don't add hentai anime to the data list          
+            if "Hentai" in extra_data[7]:
+                continue
             
-            current_row = [code, name, score] + extract_fields(reponse)
+            current_row = [code, name, score] + extra_data
             data.append(current_row)           
 
         except APIException as e:
@@ -44,9 +49,12 @@ def get_extra_information(animes_info: List) -> List:
                 print("Retrying after 15 seconds...")
                 time.sleep(15)
 
-                anime_info = jikan.anime(anime_code)
+                reponse = jikan.anime(anime_code)                
+                extra_data = extract_fields(reponse)                
+                if "Hentai" in extra_data[7]:
+                    continue
 
-                current_row = row.tolist() + extract_fields(reponse)
+                current_row = row.tolist() + extra_data
                 data.append(current_row)
 
             except APIException as e:
