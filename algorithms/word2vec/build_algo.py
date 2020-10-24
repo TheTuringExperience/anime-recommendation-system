@@ -78,7 +78,7 @@ def preprocess_data():
     df['cleaned'] = df.cleaned.apply(func=remove_html)
     df.name = df.name.apply(lambda x: re.sub(r"\s\s*", " ", re.sub(r"[\-\_]", " ", x)) )
     with open("./review_df.pkl", "wb") as filehandle:
-        pickle.dump(df, filehandle)
+        pickle.dump(df[['name', 'code']], filehandle)
         filehandle.close()
 
     return df
