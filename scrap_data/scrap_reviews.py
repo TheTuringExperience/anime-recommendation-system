@@ -55,7 +55,7 @@ for index, row in codes_df.iterrows():
         line_list = []
         with open(f"../data/reviews/{row['code']}.txt", "w", encoding="utf-8") as f:
             for review in reviews:                     
-                line_list.append(re.sub(r"\s\s+", "", review["content"].replace("\\n", "")) + '\n')
+                line_list.append(re.sub(r"\s\s+", " ", review["content"].replace("\\n", " ")) + '\n')
             f.writelines(line_list)
             f.close()        
         print("Collected #{}: {}-{}".format(index, row['code'], row['name']))
