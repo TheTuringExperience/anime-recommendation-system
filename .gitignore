@@ -9,3 +9,4 @@ __pycache__/
 *.pkl
 *.data
 .ipynb_checkpoints/
+experiment/
