@@ -18,8 +18,8 @@ parser.add_argument("-s", "--source", help="Source file containing the data of t
 args = vars(parser.parse_args())
 
 codes_df = pd.read_csv(f"{args['source']}")
-num_reviews = 40
-time_between_requests = 3  # in seconds
+num_reviews = 5
+time_between_requests = 6  # in seconds
 
 jikan = Jikan()
 
@@ -30,7 +30,7 @@ for index, row in codes_df.iterrows():
         reviews = jikan.anime(row["code"], extension='reviews')['reviews'][:num_reviews]
         time.sleep(time_between_requests)  # wait before making too many requests as per API guidelines
 
-    
+
     except APIException as e:
         #If myanimelist refuses the connection stop the scrapping and resume some time later
         logging.error(f"The server did not respond when scrapping {index}: " + str(e))
