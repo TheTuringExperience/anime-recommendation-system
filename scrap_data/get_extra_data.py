@@ -1,4 +1,4 @@
-""" Uses Jikanpy to get the image url, decription and some extra info on each of the animes in the anime_codes.csv file """
+""" Uses Jikanpy to get the image url, decription and some extra info on each of the animes in the anime_data.csv file """
 
 import os
 import time
@@ -9,31 +9,33 @@ import pandas as pd
 from jikanpy import Jikan
 from jikanpy.exceptions import APIException
 
+logging.basicConfig(level=logging.ERROR)
+
 jikan = Jikan()
 
 animes_df = pd.read_csv("../data/anime_codes.csv", encoding="utf-8")
 
-def extract_fields(reponse: Dict) -> List:
-    fields = [reponse.get("image_url", ""), reponse.get("synopsis", ""), reponse.get("title", ""),
-                reponse.get("popularity", ""), reponse.get("members", ""), reponse.get("scored_by", ""),
-                reponse.get("type", ""), reponse.get("rating", ""), reponse.get("premiered", ""),             
-                ";".join([studio.get("name", "") for studio in reponse.get("studios", [])]),
-                ";".join([genre.get("name", "").lower() for genre in reponse.get("genres", [])])
+def extract_fields(response: Dict) -> List:
+    fields = [response.get("image_url", ""), response.get("synopsis", ""), 
+                ";;".join([response.get("title_english")] + response.get("title_synonyms")),
+                response.get("popularity", ""), response.get("members", ""), response.get("scored_by", ""),
+                response.get("type", ""), response.get("rating", ""), response.get("premiered", ""),             
+                ";".join([studio.get("name", "") for studio in response.get("studios", [])]),
+                ";".join([genre.get("name", "").lower() for genre in response.get("genres", [])])
             ]
 
     return fields
 
 def get_extra_information(animes_info: List) -> List:
     data = []
-    time_between_requests = 3
+    time_between_requests = 6
 
-    for code, name, score in animes_info:
-        anime_code = code
+    for code, name, score in animes_info:        
         try:
-            reponse = jikan.anime(anime_code)    
+            response = jikan.anime(37991)
             time.sleep(time_between_requests)  # wait before making too many requests as per API guidelines
-           
-            extra_data = extract_fields(reponse)
+            
+            extra_data = extract_fields(response)
             #Don't add hentai anime to the data list          
             if "Hentai" in extra_data[7]:
                 continue
@@ -43,14 +45,14 @@ def get_extra_information(animes_info: List) -> List:
 
         except APIException as e:
             #If myanimelist refuses the connection stop the scrapping and resume some time later
-            logging.error(f"The server did not respond when scrapping {name}: " + str(e))
+            logging.error(f"The server did not respond when scrapping {name}")
             
             try:
                 print("Retrying after 15 seconds...")
                 time.sleep(15)
 
-                reponse = jikan.anime(anime_code)                
-                extra_data = extract_fields(reponse)                
+                response = jikan.anime(code)
+                extra_data = extract_fields(response)                
                 if "Hentai" in extra_data[7]:
                     continue
 
@@ -59,18 +61,18 @@ def get_extra_information(animes_info: List) -> List:
 
             except APIException as e:
                 #If myanimelist refuses the connection stop the scrapping and resume some time later
-                logging.error(f"The server did not respond again when scrapping {name}: " + str(e))
+                logging.error(f"The server did not respond again when scrapping {name}")
                 continue 
                 
         except Exception as e:
-            logging.error(f"Problems getting data for {name}: " + str(e))
+            logging.error(f"Problems getting data for {name}")
             continue
 
     return data
 
 def store_info(animes_info: List):
     extra_info_df = pd.DataFrame(data=animes_info, columns=["code", "name", "score", "image_url",
-                                                            "synopsis", "full_title", "popularity",
+                                                            "synopsis", "show_titles", "popularity",
                                                             "members", "scored_by", "type", "rating",
                                                             "premiered", "studios", "genres"])
     extra_info_df.fillna("Not available", inplace=True)
@@ -78,7 +80,7 @@ def store_info(animes_info: List):
 
 def main():
     animes_info = get_extra_information(animes_df.to_numpy().tolist())
-    store_info(anime_info)
+    store_info(animes_info)
 
 if __name__ == "__main__":
     main()
