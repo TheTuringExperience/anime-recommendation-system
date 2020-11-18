@@ -9,7 +9,7 @@ import pandas as pd
 from jikanpy import Jikan
 from jikanpy.exceptions import APIException
 
-logging.basicConfig(level=logging.ERROR)
+logging.basicConfig(level=logging.ERROR, filename="scrapping_logs.txt")
 
 jikan = Jikan()
 
@@ -17,7 +17,7 @@ animes_df = pd.read_csv("../data/anime_codes.csv", encoding="utf-8")
 
 def extract_fields(response: Dict) -> List:
     fields = [response.get("image_url", ""), response.get("synopsis", ""), 
-                ";;".join([response.get("title_english")] + response.get("title_synonyms")),
+                ";;".join([response.get("title_english", "")] + response.get("title_synonyms", [])),
                 response.get("popularity", ""), response.get("members", ""), response.get("scored_by", ""),
                 response.get("type", ""), response.get("rating", ""), response.get("premiered", ""),             
                 ";".join([studio.get("name", "") for studio in response.get("studios", [])]),
@@ -53,6 +53,7 @@ def get_extra_information(animes_info: List) -> List:
 
                 response = jikan.anime(code)
                 extra_data = extract_fields(response)                
+                #Check that the rating does not contain the word "Hentai"
                 if "Hentai" in extra_data[7]:
                     continue
 
@@ -68,7 +69,7 @@ def get_extra_information(animes_info: List) -> List:
             logging.error(f"Problems getting data for {code}")
             continue
 
-        return data
+    return data
 
 def store_info(animes_info: List):
     extra_info_df = pd.DataFrame(data=animes_info, columns=["code", "name", "score", "image_url",
@@ -76,7 +77,7 @@ def store_info(animes_info: List):
                                                             "members", "scored_by", "type", "rating",
                                                             "premiered", "studios", "genres"])
     extra_info_df.fillna("Not available", inplace=True)
-    extra_info_df.to_csv("../data/new_season.csv", mode="a", index=False)
+    extra_info_df.to_csv("../data/anime_data.csv", mode="w", index=False)
 
 def main():
     animes_info = get_extra_information(animes_df.to_numpy().tolist())
