@@ -28,11 +28,11 @@ def extract_fields(response: Dict) -> List:
 
 def get_extra_information(animes_info: List) -> List:
     data = []
-    time_between_requests = 6
+    time_between_requests = 3
 
     for code, name, score in animes_info:        
         try:
-            response = jikan.anime(37991)
+            response = jikan.anime(code)
             time.sleep(time_between_requests)  # wait before making too many requests as per API guidelines
             
             extra_data = extract_fields(response)
@@ -45,7 +45,7 @@ def get_extra_information(animes_info: List) -> List:
 
         except APIException as e:
             #If myanimelist refuses the connection stop the scrapping and resume some time later
-            logging.error(f"The server did not respond when scrapping {name}")
+            logging.error(f"The server did not respond when scrapping {code}")
             
             try:
                 print("Retrying after 15 seconds...")
@@ -61,14 +61,14 @@ def get_extra_information(animes_info: List) -> List:
 
             except APIException as e:
                 #If myanimelist refuses the connection stop the scrapping and resume some time later
-                logging.error(f"The server did not respond again when scrapping {name}")
+                logging.error(f"The server did not respond again when scrapping {code}")
                 continue 
                 
         except Exception as e:
-            logging.error(f"Problems getting data for {name}")
+            logging.error(f"Problems getting data for {code}")
             continue
 
-    return data
+        return data
 
 def store_info(animes_info: List):
     extra_info_df = pd.DataFrame(data=animes_info, columns=["code", "name", "score", "image_url",
