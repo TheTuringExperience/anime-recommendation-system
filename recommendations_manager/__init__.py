@@ -11,7 +11,7 @@ from algorithms import *
 
 anime_info_df = pd.read_csv("data/anime_data.csv", encoding="utf-8")
 
-relevant_fields = ['full_title', 'code', 'score', 'image_url', 'synopsis', 'premiered', 'type']
+relevant_fields = ['full_title', 'code', 'score', 'image_url', 'synopsis', 'premiered', 'type', 'genres']
 
 def obtain_recommendations(name: str) -> Dict[str, List[str]]:
     recom = defaultdict(list)    
@@ -29,11 +29,16 @@ def obtain_recommendations(name: str) -> Dict[str, List[str]]:
 
     return recom
 
+def obtain_random_recommendations(num_recommendations: int):
+    recom = defaultdict(list)
+    recom["random"] = get_info_from_code(recommender_algorithms["random"](num_recommendations))
+    return recom
+
 def get_info_from_code(codes: List[int]):
     recommendations_info = []
     for code in codes:
         try:
             recommendations_info.append(anime_info_df.loc[anime_info_df["code"] == code][relevant_fields].to_dict('records')[0])
-        except: 
+        except:
             continue
     return recommendations_info
