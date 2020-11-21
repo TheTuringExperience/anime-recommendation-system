@@ -1,3 +1,5 @@
+"""This script takes the ../data/anime_data.json file, extracts the data we need for each anime and saves them in ../data/anime_data.csv """
+
 import os
 from typing import List, Dict
 import json

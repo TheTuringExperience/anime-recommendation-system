@@ -1,7 +1,8 @@
+""" Uses Jikanpy to obtain the specified top reviews for the animes stored in the ../data/anime_data.csv file"""
+
 import os
 import re
 import time
-from argparse import ArgumentParser
 
 from random import randint
 import logging
@@ -12,14 +13,10 @@ from jikanpy import Jikan
 
 logging.basicConfig(level=logging.ERROR)
 
-parser = ArgumentParser()
-parser.add_argument("-s", "--source", help="Source file containing the data of the animes to scrap the reviews of")
-
-args = vars(parser.parse_args())
-
-codes_df = pd.read_csv(f"{args['source']}")
+source = "../data/anime_data.csv"
+codes_df = pd.read_csv(source)
 num_reviews = 5
-time_between_requests = 6  # in seconds
+time_between_requests = 3  # in seconds
 
 jikan = Jikan()
 
@@ -29,7 +26,6 @@ for index, row in codes_df.iterrows():
     try:
         reviews = jikan.anime(row["code"], extension='reviews')['reviews'][:num_reviews]
         time.sleep(time_between_requests)  # wait before making too many requests as per API guidelines
-
 
     except APIException as e:
         #If myanimelist refuses the connection stop the scrapping and resume some time later
@@ -48,7 +44,6 @@ for index, row in codes_df.iterrows():
     except Exception as e:
         logging.error(f"Problems getting data for {row['name']}: " + str(e))
         continue
-
 
     #if the anime has no reviews then there is no point in making a file for it
     if reviews:

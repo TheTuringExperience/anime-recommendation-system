@@ -1,5 +1,5 @@
 """Uses the jikanpy api to scrap the code, name and rating for the animes in each genre in the myanimelist website and stores 
-that information in a .csv file named after the genre, however there is overlap due to animes with multiple genres"""
+that information in ../data/anime_codes_by_genre/{genre}.csv however there is overlap due to animes with multiple genres"""
 
 import time
 from collections import namedtuple

@@ -1,4 +1,4 @@
-""" Uses Jikanpy to get the image url, decription and some extra info on each of the animes in the anime_data.csv file """
+""" Use Jikanpy to get extra data for the animes in ../data/anime_codes.csv and store it in ../data/anime_data.json"""
 
 import os
 import time

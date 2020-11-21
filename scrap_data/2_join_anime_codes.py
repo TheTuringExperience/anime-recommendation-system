@@ -1,4 +1,4 @@
-""" Creates a single .csv file with all anime codes and no overlap """
+""" Takes the data for the shows in ../data/anime_codes_by_genre and saves them in ../data/anime_codes.csv removing repeated shows"""
 
 import os
 import pandas as pd

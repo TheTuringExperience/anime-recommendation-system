@@ -2,7 +2,6 @@
 
 import os
 import re
-from argparse import ArgumentParser
 
 from typing import Dict, List
 
@@ -11,13 +10,6 @@ from jikanpy.exceptions import APIException
 import pandas as pd
 
 from get_extra_data import * 
-
-parser = ArgumentParser()
-
-parser.add_argument("-y", "--year", type=int, help="The year of the season")
-parser.add_argument("-s", "--season", type=str, help="The season of the year")
-
-args = vars(parser.parse_args())
 
 jikan = Jikan()
 
@@ -32,8 +24,8 @@ def get_basic_info(year: int, season: str):
     return seasonal_anime_data
 
 if __name__ == "__main__":
-    year = args.get("year", 2020)
-    season = args.get("season", "fall")
+    year = 2020
+    season = "fall"
     basic_info = get_basic_info(year, season)
     animes_info = get_extra_information(basic_info)
     store_info(animes_info)
