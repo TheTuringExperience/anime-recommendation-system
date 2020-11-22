@@ -27,7 +27,7 @@ NOTE: you can skip the first 2 steps if you just download the prebuilt models he
     - `cd algorithms`
     - `cd word2vec`
     - `python build_algo.py`
-3. Finally, once you have the files you need, you can run the following to set up the API and see it running on port localhost:5000
+3. Finally, once you have the files you need, you can run the following to set up the API and see it running on port localhost:8000
     - `uvicorn main:api --reload`
 
 You can check out the system in action [here](http://3.131.210.47:5000/)
