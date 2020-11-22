@@ -18,7 +18,7 @@ This system uses deep learning algorithms, along side other techniques, to give 
 
 ### Usage:
 ------
-NOTE: you can skip the first 2 steps if you just download the prebuilt models here: ~GOOGLE DRIVE LINK TBD~
+NOTE: you can skip the first 2 steps if you just download the prebuilt models here: <u>GOOGLE DRIVE LINK TBD</u>
 
 1. First you'd need to scrape the data using the python scripts (ordered 1-5) in the ./scrap_data folder
     - `cd scrap_data`
