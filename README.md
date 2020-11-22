@@ -16,6 +16,22 @@ This system uses deep learning algorithms, along side other techniques, to give 
 
 * **Soft Clustering:** This system returns the highest rated animes with the most amount of genres in common with the inserted anime as recommendations. It can also return the most recent animes with the most amount of genres in common with the inserted anime (We did some alpha testing and people requested this last feature to be added </3)
 
+### Usage:
+------
+NOTE: you can skip the first 2 steps if you just download the prebuilt models here: ~GOOGLE DRIVE LINK TBD~
+
+1. First you'd need to scrape the data using the python scripts (ordered 1-5) in the ./scrap_data folder
+    - `cd scrap_data`
+    - `python 1_scrap_by_genre.py`
+2. Then you'll have to build the algorithms from the data scraped, you can do this by running the individual build_algo.py files in each algorithms/*/. folder. For examples:
+    - `cd algorithms`
+    - `cd word2vec`
+    - `python build_algo.py`
+3. Finally, once you have the files you need, you can run the following to set up the API and see it running on port localhost:5000
+    - `uvicorn main:api --reload`
+
 You can check out the system in action [here](http://3.131.210.47:5000/)
 
 You can also find the repo for the UI [here](https://github.com/chriskok/AnimeRec)
+
+
