@@ -52,7 +52,7 @@ for index, row in codes_df.iterrows():
         line_list = []
         with open(os.path.join(base_dir, f"{row['code']}.txt"), "w", encoding="utf-8") as f:
             for rec in recommendations:                     
-                line_list.append(rec["title"] + '\n')
+                line_list.append("{},{},{}".format(rec["mal_id"],rec["recommendation_count"],rec["title"]) + '\n')
             f.writelines(line_list)
             f.close()        
         print("Collected #{}: {}".format(index, row['code']))
