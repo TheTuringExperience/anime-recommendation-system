@@ -1,4 +1,9 @@
 # Importing necessary libraries
+import re
+import pickle
+import os
+import sys
+
 import pandas as pd
 import numpy as np
 import nltk
@@ -9,19 +14,20 @@ from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.tokenize import RegexpTokenizer
 
-import re
-import pickle
-import os
-import time
-
 from sklearn.metrics.pairwise import cosine_similarity
 from gensim.models import Word2Vec
 from gensim.models import KeyedVectors
 
+sys.path.append("../../") #TODO: This is a hack, find a better way
+
+from utils import preprocess_names
+
+
 def preprocess_data():
     # Reading the data
-    code_df = pd.read_csv("../../data/anime_data.csv")[["code", "name", "score"]]
-
+    relevant_fields = ["code", "show_titles", "score"]
+    code_df = pd.read_csv("../../data/anime_data.csv")[relevant_fields]
+    code_df["name"] = [names_l[0] for names_l in preprocess_names(codes_df["show_titles"].to_list())]
     # Read the review data
     reviews_dir = "../../data/reviews"
     all_reviews = list()

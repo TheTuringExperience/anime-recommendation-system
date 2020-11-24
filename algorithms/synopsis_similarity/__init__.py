@@ -1,13 +1,18 @@
 import re 
 import pickle
+
 import numpy as np
 import scipy
 import scipy.spatial 
+
 import pandas as pd
 
-anime_data = pd.read_csv("data/anime_data.csv", encoding="utf-8")
+from utils import preprocess_names
+
+relevant_fields = ["code", "show_titles"]
+anime_data = pd.read_csv("data/anime_data.csv", encoding="utf-8")[relevant_fields]
 #preprocess the names
-anime_data.name = anime_data.name.apply(lambda x: re.sub(r"\s\s+", " ", re.sub(r"[\_+-]", " ", x)))
+anime_data["name"] = [names_l[0] for names_l in preprocess_names(anime_data["show_titles"].to_list())]
 
 synopsis_embeddings = np.load(open("algorithms/synopsis_similarity/synopsis_embeddings.npy", "rb"))
 anime_codes = pickle.load(open("algorithms/synopsis_similarity/anime_codes.pkl", "rb"))
@@ -26,5 +31,6 @@ def synopsis_similarity_recommender(anime_name: str):
         
         return results
 
-    except:        
+    except Exception as e:
+        print(e)        
         return []

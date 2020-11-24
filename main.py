@@ -6,16 +6,14 @@ import pandas as pd
 from fastapi import FastAPI, Query, status
 from fastapi.responses import JSONResponse
 
+from utils import preprocess_names
 from recommendations_manager import obtain_recommendations, obtain_random_recommendations
 
 api = FastAPI()
 
-anime_names = pd.read_csv("data/anime_data.csv")["show_titles"].tolist()
+anime_names = pd.read_csv("data/anime_data2.csv")["show_titles"].tolist()
 #Split the concatenated anime names to get list of the names of an anime
-names_lists = [names.split(";;") for names in anime_names] 
-#Remove punctuation marks from each name and turn to lowercaps
-names_lists = [re.sub(r'[^\w\s]', '', name_l.lower()) for name_l in name_lists] 
-
+names_lists = preprocess_names(anime_names)
  
 @api.get("/api/v1/get_recommendations")
 async def get_recommendations(anime_name: str = Query("")):
