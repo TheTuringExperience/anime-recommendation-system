@@ -10,3 +10,5 @@ __pycache__/
 *.data
 .ipynb_checkpoints/
 experiment/
+data/reviews/
+data/recommendations/
