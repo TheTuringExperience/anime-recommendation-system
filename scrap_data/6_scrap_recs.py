@@ -1,4 +1,4 @@
-""" Uses Jikanpy to obtain the specified top reviews for the animes stored in the ../data/anime_data.csv file"""
+""" Uses Jikanpy to obtain the specified recommendations for the animes stored in the ../data/anime_data.csv file"""
 
 import os
 import re
@@ -13,10 +13,9 @@ from jikanpy import Jikan
 
 logging.basicConfig(level=logging.ERROR)
 
-base_dir = "../data/reviews"
+base_dir = "../data/recommendations"
 source = "../data/anime_data.csv"
 codes_df = pd.read_csv(source)
-num_reviews = 5
 time_between_requests = 4  # in seconds
 
 if not os.path.isdir(base_dir):  # If the base_dir does not exist create it
@@ -24,11 +23,10 @@ if not os.path.isdir(base_dir):  # If the base_dir does not exist create it
 
 jikan = Jikan()
 
-#scrap the reviews starting from the lower_bound
+#scrap the recommendations starting from the lower_bound
 for index, row in codes_df.iterrows():
-    # Put an upper bound on the amoun of reviews to reduce the inbalance problem
     try:
-        reviews = jikan.anime(row["code"], extension='reviews')['reviews'][:num_reviews]
+        recommendations = jikan.anime(row["code"], extension='recommendations')['recommendations']
         time.sleep(time_between_requests)  # wait before making too many requests as per API guidelines
 
     except APIException as e:
@@ -38,7 +36,7 @@ for index, row in codes_df.iterrows():
         try:
             print("Retrying after 15 seconds...")
             time.sleep(15)
-            reviews = jikan.anime(row["code"], extension='reviews')['reviews'][:num_reviews]
+            recommendations = jikan.anime(row["code"], extension='recommendations')['recommendations']
 
         except APIException as e:
             #If myanimelist refuses the connection stop the scrapping and resume some time later
@@ -49,16 +47,16 @@ for index, row in codes_df.iterrows():
         logging.error(f"Problems getting data for {row['code']}: " + str(e))
         continue
 
-    #if the anime has no reviews then there is no point in making a file for it
-    if reviews:
+    #if the anime has no recommendations then there is no point in making a file for it
+    if recommendations:
         line_list = []
         with open(os.path.join(base_dir, f"{row['code']}.txt"), "w", encoding="utf-8") as f:
-            for review in reviews:                     
-                line_list.append(re.sub(r"\s\s+", " ", review["content"].replace("\\n", " ")) + '\n')
+            for rec in recommendations:                     
+                line_list.append(rec["title"] + '\n')
             f.writelines(line_list)
             f.close()        
         print("Collected #{}: {}".format(index, row['code']))
 
     else:
-        logging.error(f"No reviews available for {row['code']}")
+        logging.error(f"No recommendations available for {row['code']}")
         continue
