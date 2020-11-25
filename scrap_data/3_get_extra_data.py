@@ -38,7 +38,7 @@ def get_extra_information(animes_info: List) -> List:
     data = []
     time_between_requests = 3
 
-    for code, name, score in animes_info[:2000]:        
+    for code, name, score in animes_info:        
         try:
             
             data.extend(make_request(code, time_between_requests))
