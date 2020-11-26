@@ -5,13 +5,24 @@ import os
 import sys
 
 from algorithms.soft_clustering import soft_clustering_recommendator
+from recommendations_manager import obtain_recommendations, obtain_random_recommendations
+from utils import get_anime_code_from_name
 
-data = pd.read_csv('../../data/recommendations/1.txt', sep=",", header=None)
+anime_name = 'vinland saga'
+anime_code = get_anime_code_from_name(anime_name)
+print(anime_code)
+
+recs = obtain_recommendations(anime_name)
+print(recs)
+
+synopsis_recs = recs["similar_synopsis"]
+print(synopsis_recs)
+
+data = pd.read_csv('data/recommendations/{}.txt'.format(anime_code), sep=",", header=None)
 data.columns = ["mal_id", "relevance", "name"]
-
-data.head()
+print(data.head())
 
 
 true_relevance = np.asarray([[10, 0, 0, 1, 5]])
 scores = np.asarray([[.1, .2, .3, 4, 70]])
-ndcg_score(true_relevance, scores)
+print(ndcg_score(true_relevance, scores))
