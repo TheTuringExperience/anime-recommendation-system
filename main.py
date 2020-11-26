@@ -11,7 +11,7 @@ from recommendations_manager import obtain_recommendations, obtain_random_recomm
 
 api = FastAPI()
 
-anime_names = pd.read_csv("data/anime_data2.csv")["show_titles"].tolist()
+anime_names = pd.read_csv("data/anime_data.csv")["show_titles"].tolist()
 #Split the concatenated anime names to get list of the names of an anime
 names_lists = preprocess_names(anime_names)
  
