@@ -8,6 +8,7 @@ __pycache__/
 *.gz
 *.pkl
 *.data
+*.xml
 .ipynb_checkpoints/
 experiment/
 data/reviews/
