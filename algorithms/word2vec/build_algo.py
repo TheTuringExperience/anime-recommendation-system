@@ -27,7 +27,7 @@ def preprocess_data():
     # Reading the data
     relevant_fields = ["code", "show_titles", "score"]
     code_df = pd.read_csv("../../data/anime_data.csv")[relevant_fields]
-    code_df["name"] = [names_l[0] for names_l in preprocess_names(codes_df["show_titles"].to_list())]
+    code_df["name"] = [names_l[0] for names_l in preprocess_names(code_df["show_titles"].to_list())]
     # Read the review data
     reviews_dir = "../../data/reviews"
     all_reviews = list()
