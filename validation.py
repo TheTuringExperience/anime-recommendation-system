@@ -81,14 +81,18 @@ def get_scores(anime_name, verbose=False):
 
 # Input: name of anime and array of recommended anime codes for that anime
 # Output: ndcg score
-def score_individual_rec(anime_name, rec_array):
+# TODO: allow selection of individual algorithm
+def score_individual_rec(anime_name, rec_array, verbose=False):
     anime_code = get_anime_code_from_name(anime_name)
     try:
         data = pd.read_csv('data/recommendations/{}.txt'.format(anime_code), sep=",", header=None)
         data.columns = ["mal_id", "relevance", "name"]
     except FileNotFoundError:
-        print('no recommendations found for {}'.format(anime_code))
-        return {}
+        if verbose: print('no recommendations found for {}'.format(anime_code))
+        return -1
+    except:
+        if verbose: print('error reading file for {}'.format(anime_code))
+        return -1
 
     true_rel_array = []
     curr_score_array = []
@@ -132,6 +136,28 @@ def random_scoring(random_state=42, test_size=0.3):
     
     return full_dict
 
+# Validation with a large amount of random anime for specific algorithm
+# Output: average ndcg scores of specific algorithm
+# TODO: allow selection of individual algorithm
+def random_individual_scoring(random_state=42, test_size=0.3):
+    anime_names = pd.read_csv("data/anime_data.csv")["show_titles"].tolist()
+    names_lists = preprocess_names(anime_names)
+    x_train, x_test = train_test_split(names_lists, test_size=test_size, random_state=random_state)
+
+    error_count = 0
+    total_score = 0
+    for item_list in x_test:
+        item = item_list[0]
+        test_array = soft_clustering_recommendator(item, 'score')
+        score = score_individual_rec(item, test_array)
+        if(score == -1): error_count += 1
+        else: total_score += score
+    
+    test_set_length = len(x_test) - error_count
+    avg_score = total_score / test_set_length
+    
+    return avg_score
+
 # TODO: create a mock algorithm that just takes cosine sim between vectors of genre or something
 
 def main():
@@ -150,8 +176,11 @@ def main():
     score = score_individual_rec('cowboy bebop', test_array)
     print(score)
 
-    average_ncdg = random_scoring(test_size=0.01)
-    print(average_ncdg)
+    average_ndcg = random_scoring(test_size=0.01)
+    print(average_ndcg)
+
+    avg_indv_ndcg = random_individual_scoring()
+    print(avg_indv_ndcg)
 
 if __name__ == "__main__":
     main()
