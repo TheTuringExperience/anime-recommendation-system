@@ -8,9 +8,11 @@ import sys
 
 from algorithms.word2vec import similarity_recommendator
 from algorithms.soft_clustering import soft_clustering_recommendator
+from algorithms.genre_match import genre_match_recommender
 from algorithms.synopsis_similarity import synopsis_similarity_recommender
+
 from recommendations_manager import obtain_recommendations, obtain_random_recommendations
-from utils import preprocess_names, get_anime_code_from_name
+from utils import preprocess_names, get_anime_code_from_name, get_anime_name_from_code, get_genres_list
 
 def print_matches(recs, data):
     for key in recs:
@@ -148,7 +150,8 @@ def random_individual_scoring(random_state=42, test_size=0.3):
     total_score = 0
     for item_list in x_test:
         item = item_list[0]
-        test_array = soft_clustering_recommendator(item, 'score')
+        # test_array = soft_clustering_recommendator(item, 'score')
+        test_array = genre_match_recommender(item)
         score = score_individual_rec(item, test_array)
         if(score == -1): error_count += 1
         else: total_score += score
@@ -164,23 +167,31 @@ def main():
     score_dict = get_scores('cowboy bebop', verbose=False)
     print(score_dict)
 
-    test_array = similarity_recommendator('cowboy bebop')
-    score = score_individual_rec('cowboy bebop', test_array)
+    # test_array = similarity_recommendator('cowboy bebop')
+    # score = score_individual_rec('cowboy bebop', test_array)
+    # print(score)
+
+    # test_array = soft_clustering_recommendator('cowboy bebop', 'score')
+    # score = score_individual_rec('cowboy bebop', test_array)
+    # print(score)
+
+    # test_array = synopsis_similarity_recommender('cowboy bebop')
+    # score = score_individual_rec('cowboy bebop', test_array)
+    # print(score)
+
+    print(get_genres_list())
+
+    test_array = genre_match_recommender(get_anime_name_from_code(5114))
+    score = score_individual_rec(get_anime_name_from_code(5114), test_array)
     print(score)
+    for item in test_array:
+        print(get_anime_name_from_code(item))
 
-    test_array = soft_clustering_recommendator('cowboy bebop', 'score')
-    score = score_individual_rec('cowboy bebop', test_array)
-    print(score)
+    # average_ndcg = random_scoring(test_size=0.01)
+    # print(average_ndcg)
 
-    test_array = synopsis_similarity_recommender('cowboy bebop')
-    score = score_individual_rec('cowboy bebop', test_array)
-    print(score)
-
-    average_ndcg = random_scoring(test_size=0.01)
-    print(average_ndcg)
-
-    avg_indv_ndcg = random_individual_scoring(test_size=0.01)
-    print(avg_indv_ndcg)
+    # avg_indv_ndcg = random_individual_scoring(test_size=0.01)
+    # print(avg_indv_ndcg)
 
 if __name__ == "__main__":
     main()

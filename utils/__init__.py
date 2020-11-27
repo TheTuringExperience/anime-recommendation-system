@@ -17,3 +17,24 @@ def get_anime_code_from_name(anime_name: str) -> int:
     code = anime_data[anime_data.name == anime_name].code.tolist()[0]
 
     return code
+
+def get_anime_name_from_code(anime_code: int) -> str:
+    relevant_fields = ["code", "show_titles"]
+    anime_data = pd.read_csv("data/anime_data.csv", encoding="utf-8")[relevant_fields]
+    #preprocess the names
+    anime_data["name"] = [names_l[0] for names_l in preprocess_names(anime_data["show_titles"].to_list())]
+    name = anime_data[anime_data.code == anime_code].name.tolist()[0]
+
+    return name
+
+def get_genres_list() -> List[str]:
+    anime_data_path = "data/anime_data.csv"
+
+    relevant_fields = ["show_titles", "score", "code", "premiered", "genres"]
+    animes_df = pd.read_csv(anime_data_path, encoding="utf-8")[relevant_fields]
+
+    #create a list of genres using the "genres" column in the animes_df
+    genres = list({genre for genres_list in animes_df.genres.tolist() 
+                            for genre in genres_list.split(";")})
+    
+    return genres
