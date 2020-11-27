@@ -1,4 +1,6 @@
 from sklearn.metrics import ndcg_score
+from sklearn.model_selection import train_test_split
+
 import numpy as np
 import pandas as pd
 import os
@@ -8,7 +10,7 @@ from algorithms.word2vec import similarity_recommendator
 from algorithms.soft_clustering import soft_clustering_recommendator
 from algorithms.synopsis_similarity import synopsis_similarity_recommender
 from recommendations_manager import obtain_recommendations, obtain_random_recommendations
-from utils import get_anime_code_from_name
+from utils import preprocess_names, get_anime_code_from_name
 
 def print_matches(recs, data):
     for key in recs:
@@ -50,8 +52,9 @@ def score_with_ndcg(recs, data):
                 curr_score_array.append(1)
                 true_rel_array.append(0)
 
-        ndcg_value = ndcg_score(np.asarray([true_rel_array]), np.asarray([curr_score_array]))
-        score_dict[key] = ndcg_value
+        if (len(true_rel_array) > 0):
+            ndcg_value = ndcg_score(np.asarray([true_rel_array]), np.asarray([curr_score_array]))
+            score_dict[key] = ndcg_value
     
     return score_dict
 
@@ -67,6 +70,9 @@ def get_scores(anime_name, verbose=False):
         data.columns = ["mal_id", "relevance", "name"]
     except FileNotFoundError:
         print('no recommendations found for {}'.format(anime_code))
+        return {}
+    except:
+        print('error reading file for {}'.format(anime_code))
         return {}
 
     if verbose: print_matches(recs, data)
@@ -99,6 +105,27 @@ def score_individual_rec(anime_name, rec_array):
 
     return ndcg_value
 
+# Validation with a large amount of random anime
+def random_scoring():
+    anime_names = pd.read_csv("data/anime_data.csv")["show_titles"].tolist()
+    names_lists = preprocess_names(anime_names)
+    x_train, x_test = train_test_split(names_lists, test_size=0.01)
+    # print(x_test)
+
+    full_dict = {}
+    sample_recs = obtain_recommendations(x_test[0][0])
+    for key in sample_recs:
+        full_dict[key] = 0
+
+    for item_list in x_test:
+        item = item_list[0]
+        print(item)
+        curr_dict = get_scores(item)
+        for key in curr_dict:
+            full_dict[key] += curr_dict[key]
+        print(full_dict, curr_dict)
+
+# TODO: create a mock algorithm that just takes cosine sim between vectors of genre or something
 
 def main():
     score_dict = get_scores('cowboy bebop', verbose=False)
@@ -115,6 +142,8 @@ def main():
     test_array = synopsis_similarity_recommender('cowboy bebop')
     score = score_individual_rec('cowboy bebop', test_array)
     print(score)
+
+    random_scoring()
 
 if __name__ == "__main__":
     main()
