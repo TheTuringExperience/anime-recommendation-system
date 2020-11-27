@@ -150,8 +150,8 @@ def random_individual_scoring(random_state=42, test_size=0.3):
     total_score = 0
     for item_list in x_test:
         item = item_list[0]
-        # test_array = soft_clustering_recommendator(item, 'score')
-        test_array = genre_match_recommender(item)
+        test_array = soft_clustering_recommendator(item, 'score')
+        # test_array = genre_match_recommender(item)
         score = score_individual_rec(item, test_array)
         if(score == -1): error_count += 1
         else: total_score += score
@@ -161,7 +161,6 @@ def random_individual_scoring(random_state=42, test_size=0.3):
     
     return avg_score
 
-# TODO: create a mock algorithm that just takes cosine sim between vectors of genre or something
 
 def main():
     score_dict = get_scores('cowboy bebop', verbose=False)
@@ -179,11 +178,14 @@ def main():
     # score = score_individual_rec('cowboy bebop', test_array)
     # print(score)
 
-    print(get_genres_list())
+    genre_list = get_genres_list()
 
-    test_array = genre_match_recommender(get_anime_name_from_code(5114))
+    # for i in range(10):
+    # test_array = genre_match_recommender(get_anime_name_from_code(5114), genre_list[:i])
+    test_array = genre_match_recommender(get_anime_name_from_code(5114), [genre_list[0]])
     score = score_individual_rec(get_anime_name_from_code(5114), test_array)
     print(score)
+
     for item in test_array:
         print(get_anime_name_from_code(item))
 
