@@ -179,7 +179,7 @@ def main():
     average_ndcg = random_scoring(test_size=0.01)
     print(average_ndcg)
 
-    avg_indv_ndcg = random_individual_scoring()
+    avg_indv_ndcg = random_individual_scoring(test_size=0.01)
     print(avg_indv_ndcg)
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-""" Creates the files needed to run the soft_culstering recommender algorithm"""
+""" Creates the files needed to run the genre_match recommender algorithm"""
 
 import os
 import re
@@ -8,19 +8,12 @@ import numpy as np
 import pandas as pd
 
 from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import MultiLabelBinarizer
 
 anime_data_path = "../../data/anime_data.csv"
 
 relevant_fields = ["show_titles", "score", "code", "premiered", "genres"]
 animes_df = pd.read_csv(anime_data_path, encoding="utf-8")[relevant_fields]
-
-#create a list of genres using the "genres" column in the animes_df
-genres = list({genre  for genres_list in animes_df.genres.tolist() 
-                        for genre in genres_list.split(";")})
-
-#create a one_hot encoded representation of each genre
-one_hot = OneHotEncoder(handle_unknown="ignore")
-one_hot.fit([[genre] for genre in genres])
 
 season_to_month = {"Winter": "01", "Spring": "04", "Summer": "07", "Fall": "10"}
 
@@ -32,20 +25,21 @@ def convert_to_date(anime_season: str):
         return airing_date
     return None
 
-def get_genres_vector(genres_str: str):
-    """returns the sum of the one-hot representations of the genres"""
-    genres = genres_str.split(";")
-    genres_vector = sum([one_hot.transform([[genre]]).toarray() for genre in genres])[0]
-    return genres_vector
+def genres_to_array(genres_str: str):
+    return genres_str.split(';')
 
 def main():
-    animes_df["genres"] = animes_df.genres.apply(get_genres_vector)        
-    #round up the score
-    animes_df["score"] = animes_df.score.apply(lambda x: round(x))
-    #convert to and appropiate date format
-    animes_df["premiered"] = animes_df.premiered.apply(convert_to_date)
+
+    initial_df = animes_df.copy()
+    initial_df['genres_array'] = initial_df.genres.apply(genres_to_array) 
+    initial_df["premiered"] = initial_df.premiered.apply(convert_to_date) 
+
+    mlb = MultiLabelBinarizer()
+    binary_df = pd.DataFrame(mlb.fit_transform(initial_df['genres_array']),columns=mlb.classes_, index=initial_df.index)
+    output_df = pd.concat([initial_df, binary_df], axis=1)
+    # print(output_df.head())
+
+    output_df.to_pickle("./anime_genres_df.pkl")
 
 if __name__ == "__main__":
     main()
-    #save the dict as a binary pickle file
-    animes_df.to_pickle("./anime_genres_df.pkl")
