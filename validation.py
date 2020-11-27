@@ -69,10 +69,10 @@ def get_scores(anime_name, verbose=False):
         data = pd.read_csv('data/recommendations/{}.txt'.format(anime_code), sep=",", header=None)
         data.columns = ["mal_id", "relevance", "name"]
     except FileNotFoundError:
-        print('no recommendations found for {}'.format(anime_code))
+        if verbose: print('no recommendations found for {}'.format(anime_code))
         return {}
     except:
-        print('error reading file for {}'.format(anime_code))
+        if verbose: print('error reading file for {}'.format(anime_code))
         return {}
 
     if verbose: print_matches(recs, data)
@@ -106,10 +106,11 @@ def score_individual_rec(anime_name, rec_array):
     return ndcg_value
 
 # Validation with a large amount of random anime
-def random_scoring():
+# Output: average ndcg scores of each key in dictionary
+def random_scoring(random_state=42, test_size=0.3):
     anime_names = pd.read_csv("data/anime_data.csv")["show_titles"].tolist()
     names_lists = preprocess_names(anime_names)
-    x_train, x_test = train_test_split(names_lists, test_size=0.01)
+    x_train, x_test = train_test_split(names_lists, test_size=test_size, random_state=random_state)
     # print(x_test)
 
     full_dict = {}
@@ -117,13 +118,19 @@ def random_scoring():
     for key in sample_recs:
         full_dict[key] = 0
 
+    error_count = 0
     for item_list in x_test:
         item = item_list[0]
-        print(item)
         curr_dict = get_scores(item)
+        if (not bool(curr_dict)): error_count += 1
         for key in curr_dict:
             full_dict[key] += curr_dict[key]
-        print(full_dict, curr_dict)
+    
+    test_set_length = len(x_test) - error_count
+    for key in full_dict:
+        full_dict[key] = full_dict[key] / test_set_length
+    
+    return full_dict
 
 # TODO: create a mock algorithm that just takes cosine sim between vectors of genre or something
 
@@ -143,7 +150,8 @@ def main():
     score = score_individual_rec('cowboy bebop', test_array)
     print(score)
 
-    random_scoring()
+    average_ncdg = random_scoring(test_size=0.01)
+    print(average_ncdg)
 
 if __name__ == "__main__":
     main()
