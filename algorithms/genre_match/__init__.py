@@ -30,9 +30,9 @@ def genre_match_recommender(anime_name: str, weight_dict) -> List[int]:
         df["similarity"] = df[anime_code]
         cols_to_keep = ["score", "popularity", "members", "scored_by", "similarity"]
         df = df[cols_to_keep]
-        # weight_dict = {"score":0.1, "popularity":0.1, "members":0.05, "scored_by":0.05, "similarity":0.7}
         df['ranking_score'] = df.apply(calculate_ranking_score, axis=1, args=(weight_dict,))
-        print(df.head())
+        # print(df.head())
+
         # df = pd.concat([df,full_df.score], axis=1)
         # df = df[df.similarity != 1.0]
 

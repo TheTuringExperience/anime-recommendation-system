@@ -141,7 +141,7 @@ def random_scoring(random_state=42, test_size=0.3):
 # Validation with a large amount of random anime for specific algorithm
 # Output: average ndcg scores of specific algorithm
 # TODO: allow selection of individual algorithm
-def random_individual_scoring(random_state=42, test_size=0.3):
+def random_individual_scoring(random_state=42, test_size=0.3, weight_dict={"score":0.1, "popularity":0.1, "members":0.05, "scored_by":0.05, "similarity":0.7}):
     anime_names = pd.read_csv("data/anime_data.csv")["show_titles"].tolist()
     names_lists = preprocess_names(anime_names)
     x_train, x_test = train_test_split(names_lists, test_size=test_size, random_state=random_state)
@@ -150,8 +150,8 @@ def random_individual_scoring(random_state=42, test_size=0.3):
     total_score = 0
     for item_list in x_test:
         item = item_list[0]
-        test_array = soft_clustering_recommendator(item, 'score')
-        # test_array = genre_match_recommender(item)
+        # test_array = soft_clustering_recommendator(item, 'score')
+        test_array = genre_match_recommender(item, weight_dict)
         score = score_individual_rec(item, test_array)
         if(score == -1): error_count += 1
         else: total_score += score
@@ -163,9 +163,11 @@ def random_individual_scoring(random_state=42, test_size=0.3):
 
 
 def main():
-    score_dict = get_scores('cowboy bebop', verbose=False)
-    print(score_dict)
+    # # FULL SET OF ALGORITHM TESTING
+    # score_dict = get_scores('cowboy bebop', verbose=False)
+    # print(score_dict)
 
+    # # INVIDUAL ALGORITHM TESTING
     # test_array = similarity_recommendator('cowboy bebop')
     # score = score_individual_rec('cowboy bebop', test_array)
     # print(score)
@@ -178,21 +180,30 @@ def main():
     # score = score_individual_rec('cowboy bebop', test_array)
     # print(score)
 
-    # genre_list = get_genres_list()
+    # # NEW GENRE_MATCH ALGORITHM TESTING
+    # weight_dict = {"score":0.1, "popularity":0.1, "members":0.05, "scored_by":0.05, "similarity":0.7}
+    # test_array = genre_match_recommender(get_anime_name_from_code(5114), weight_dict)
+    # for item in test_array:
+    #     print(get_anime_name_from_code(item))
 
-    # for i in range(10):
-    # test_array = genre_match_recommender(get_anime_name_from_code(5114), genre_list[:i])
-    test_array = genre_match_recommender(get_anime_name_from_code(5114))
-    for item in test_array:
-        print(get_anime_name_from_code(item))
-        
-    score = score_individual_rec(get_anime_name_from_code(5114), test_array)
-    print(score)
+    # score = score_individual_rec(get_anime_name_from_code(5114), test_array)
+    # print(score)
 
-    # average_ndcg = random_scoring(test_size=0.01)
+    # HYPERPARAMETER TUNING TESTING
+    weight_dict = {"score":0.1, "popularity":0.1, "members":0.05, "scored_by":0.05, "similarity":0.7}
+    for score in np.arange(0.05, 0.20, 0.05):
+        for popularity in np.arange(0.05, 0.20, 0.05):
+            sim = 1 - score - popularity - 0.1
+            weight_dict = {"score":score, "popularity":popularity, "members":0.05, "scored_by":0.05, "similarity":sim}
+            avg_indv_ndcg = random_individual_scoring(test_size=0.1, weight_dict=weight_dict)
+            print("NDCG: {}, score_%: {}, pop_%: {}, sim_%: {}".format(score, popularity, sim, avg_indv_ndcg))
+
+    # # LARGE (RANDOMLY SELECTED) TEST SET SCORING
+    # average_ndcg = random_scoring(test_size=0.3)
     # print(average_ndcg)
 
-    # avg_indv_ndcg = random_individual_scoring(test_size=0.01)
+    # # LARGE (RANDOMLY SELECTED) TEST SET SCORING ON INDV ALGO
+    # avg_indv_ndcg = random_individual_scoring(test_size=0.3)
     # print(avg_indv_ndcg)
 
 if __name__ == "__main__":
