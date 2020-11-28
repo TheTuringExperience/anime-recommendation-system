@@ -196,7 +196,7 @@ def main():
             sim = 1 - score - popularity - 0.1
             weight_dict = {"score":score, "popularity":popularity, "members":0.05, "scored_by":0.05, "similarity":sim}
             avg_indv_ndcg = random_individual_scoring(test_size=0.1, weight_dict=weight_dict)
-            print("NDCG: {}, score_%: {}, pop_%: {}, sim_%: {}".format(score, popularity, sim, avg_indv_ndcg))
+            print("NDCG: {}, score_%: {}, pop_%: {}, sim_%: {}".format(avg_indv_ndcg, score, popularity, sim))
 
     # # LARGE (RANDOMLY SELECTED) TEST SET SCORING
     # average_ndcg = random_scoring(test_size=0.3)
