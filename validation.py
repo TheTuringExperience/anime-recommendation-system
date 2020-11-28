@@ -178,16 +178,16 @@ def main():
     # score = score_individual_rec('cowboy bebop', test_array)
     # print(score)
 
-    genre_list = get_genres_list()
+    # genre_list = get_genres_list()
 
     # for i in range(10):
     # test_array = genre_match_recommender(get_anime_name_from_code(5114), genre_list[:i])
-    test_array = genre_match_recommender(get_anime_name_from_code(5114), [genre_list[0]])
-    score = score_individual_rec(get_anime_name_from_code(5114), test_array)
-    print(score)
-
+    test_array = genre_match_recommender(get_anime_name_from_code(5114))
     for item in test_array:
         print(get_anime_name_from_code(item))
+        
+    score = score_individual_rec(get_anime_name_from_code(5114), test_array)
+    print(score)
 
     # average_ndcg = random_scoring(test_size=0.01)
     # print(average_ndcg)
