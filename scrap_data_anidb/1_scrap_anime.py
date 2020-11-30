@@ -1,7 +1,8 @@
+""" Scrap from anidb the data for the animes in the ./anidb_ids.txt file and store it in the ../data/anime_data_anidb.json file"""
 import os
 import time
 import logging
-from typing import List
+from typing import List, Dict
 
 import json
 import xml.etree.ElementTree as ET
@@ -25,34 +26,62 @@ with open("./anidb_ids.txt", "r", encoding="utf-8") as f:
     anime_ids = [int(aid) for aid in f.readlines()]
     f.close()
 
-def get_data():
-    animes_data = list()
-    for idx, aid in zip(range(2), anime_ids):
-        params["aid"] = aid
-        response = get(url=url, params=params)
-        
-        # time.sleep(time_between_requests)
+def extract_fields(xml_string: str, default_value: str = "NA") -> Dict:
+    try:
+        root = ET.fromstring(xml_string.decode("utf-8", "replace"))
 
-        root = ET.fromstring(response.content.decode("utf-8", "replace"))
-        
-        #extract the data for each relevant field
+        #Extract the data for all the relevant fields
+        show_type = root.findtext("type", default_value)
+        episode_count = root.findtext("episodecount", default_value)
+        start_date = root.findtext("startdate", default_value)
+        end_date = root.findtext("enddate", default_value)
+
+        rating = default_value
+        if root.find("ratings") is not None:
+            # If the rating is aviable then set it
+            rating = root.find("ratings").findtext("permanent")
+
+        titles = list()
+        for child in root.iter("title"):
+            if child.get("type", "") in ["official", "synonym"] and child.get("{http://www.w3.org/XML/1998/namespace}lang", "") in ["en", "x-jat"]:
+                titles.append(child.text)
+
         genres = list()
         for child in root.iter("tag"):
-            if int(child.attrib.get("weight", 0)) > 140:
-                genres.append(child.find("name").text)
+            if int(child.attrib.get("weight", 0)) > 100:
+                genres.append(child.findtext("name", default_value))
         genres = list(map(lambda s: s.lower(), genres))
 
         similar_anime = list()
         for child in root.iter("similaranime"):
-            similar_anime.append(child.get("id", ""))
+            similar_anime.append(child.get("id", default_value))
 
         character_info = list()
         for child in root.iter("character"):
             if child.get("type") == "main character in":
-                character_info.append({"id": child.get("id"),
-                                    "name": child.findtext("name"),
-                                    "description": child.findtext("description")})       
-        animes_data.append({"genres": genres, "similar_anime": similar_anime, "characters": character_info})
+                character_info.append({"id": child.get("id", default_value),
+                                       "name": child.findtext("name", default_value),
+                                       "description": child.findtext("description", default_value)})
+
+        data = {"titles": titles, "type": show_type, "episode_count": episode_count,
+                "genres": genres, "similar_anime": similar_anime, "start_date": start_date,
+                "end_date": end_date, "rating": rating, "characters": character_info}
+        return data
+
+    except:
+        return dict()
+
+
+def get_data() -> List:
+    animes_data = list()
+    for aid in anime_ids:
+        params["aid"] = aid
+        response = get(url=url, params=params)
+
+        time.sleep(time_between_requests)
+        data = extract_fields(response.content)
+        data["aid"] = aid
+        animes_data.append(data)
 
         logging.info("collected data of: " + str(aid))
 
