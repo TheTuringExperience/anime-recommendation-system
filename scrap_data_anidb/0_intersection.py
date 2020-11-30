@@ -1,3 +1,5 @@
+""" Creates a file ./anidb_ids.txt which contains the anidb ids for all the animes in the ../anime_data_anidb.xml file that are also in the
+../data/anime_data.csv dile """
 from typing import List
 import xml.etree.ElementTree as ET
 
