@@ -11,7 +11,8 @@ from requests import get
 
 logging.basicConfig(level=logging.INFO)
 
-time_between_requests = 5
+time_between_requests = 6
+amount_per_session = 500
 client, clientver = os.getenv("ANIDB_AUTH").split(";")
 url = f"http://api.anidb.net:9001/httpapi"
 params = {
@@ -74,7 +75,24 @@ def extract_fields(xml_string: str, default_value: str = "NA") -> Dict:
 
 def get_data() -> List:
     animes_data = list()
-    for aid in anime_ids:
+    previous_i = 0
+    for i in range(500, len(anime_ids), 500):
+        for aid in anime_ids[previous_i: i]:
+            params["aid"] = aid
+            response = get(url=url, params=params)
+
+            time.sleep(time_between_requests)
+            data = extract_fields(response.content)
+            data["aid"] = aid
+            animes_data.append(data)
+
+            logging.info("collected data of: " + str(aid))
+        previous_i = i
+        time.sleep(300)  # sleep for 300 seconds between cycles
+        print('FINISHED {} - {}. Taking a longer break...'.format(previous_i, i))
+    
+    # One final time with till the end of anime_ids
+    for aid in anime_ids[previous_i:len(anime_ids)]:
         params["aid"] = aid
         response = get(url=url, params=params)
 
