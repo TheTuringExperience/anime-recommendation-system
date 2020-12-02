@@ -36,6 +36,8 @@ def store_as_csv(animes_info: List):
                                                             "members", "scored_by", "type", "rating",
                                                             "premiered", "studios", "genres"])
     extra_info_df.fillna("Not available", inplace=True)
+    # Filter out anime that are not TV shows, Movies or ONA
+    extra_info_df = extra_info_df[extra_info_df.type.isin(["Movie", "ONA", "TV"])]
     extra_info_df.to_csv("../data/anime_data.csv", mode="w", index=False)
 
 
