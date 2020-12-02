@@ -12,7 +12,7 @@ from requests import get
 logging.basicConfig(level=logging.INFO)
 
 time_between_requests = 6
-amount_per_session = 500
+amount_per_session = 250
 client, clientver = os.getenv("ANIDB_AUTH").split(";")
 url = f"http://api.anidb.net:9001/httpapi"
 params = {
@@ -73,11 +73,10 @@ def extract_fields(xml_string: str, default_value: str = "NA") -> Dict:
         return dict()
 
 
-def get_data() -> List:
+def get_data(start, stop) -> List:
     animes_data = list()
-    previous_i = 0
-    for i in range(500, len(anime_ids), 500):
-        for aid in anime_ids[previous_i: i]:
+    try: 
+        for aid in anime_ids[start: stop]:
             params["aid"] = aid
             response = get(url=url, params=params)
 
@@ -87,21 +86,8 @@ def get_data() -> List:
             animes_data.append(data)
 
             logging.info("collected data of: " + str(aid))
-        previous_i = i
-        time.sleep(300)  # sleep for 300 seconds between cycles
-        print('FINISHED {} - {}. Taking a longer break...'.format(previous_i, i))
-    
-    # One final time with till the end of anime_ids
-    for aid in anime_ids[previous_i:len(anime_ids)]:
-        params["aid"] = aid
-        response = get(url=url, params=params)
-
-        time.sleep(time_between_requests)
-        data = extract_fields(response.content)
-        data["aid"] = aid
-        animes_data.append(data)
-
-        logging.info("collected data of: " + str(aid))
+    except: 
+        print('stopped at {}'.format(start))
 
     return animes_data
 
@@ -121,7 +107,16 @@ def store_info(animes_data: List):
             json.dump(file_content, j, ensure_ascii=False)
 
 def main():
-    animes_data = get_data()
+    previous_i = 0
+    for i in range(amount_per_session, len(anime_ids), amount_per_session):
+        animes_data = get_data(previous_i, i)
+        store_info(animes_data)
+        print('FINISHED {} - {}. Taking a longer break...'.format(previous_i, i))
+        previous_i = i
+        time.sleep(300)  # sleep for 300 seconds between sessions
+    
+    # final time to complete anime_ids
+    animes_data = get_data(previous_i, len(anime_ids))
     store_info(animes_data)
 
 if __name__ == "__main__":
