@@ -84,6 +84,7 @@ def get_scores(anime_name, verbose=False):
 # Input: name of anime and array of recommended anime codes for that anime
 # Output: ndcg score
 # TODO: allow selection of individual algorithm
+# TODO: don't allow scoring for anything less than X user recs (too many with 1 recs)
 def score_individual_rec(anime_name, rec_array, verbose=False):
     anime_code = get_anime_code_from_name(anime_name)
     try:
@@ -180,23 +181,24 @@ def main():
     # score = score_individual_rec('cowboy bebop', test_array)
     # print(score)
 
-    # # NEW GENRE_MATCH ALGORITHM TESTING
+    # NEW GENRE_MATCH ALGORITHM TESTING
     # weight_dict = {"score":0.1, "popularity":0.1, "members":0.05, "scored_by":0.05, "similarity":0.7}
-    # test_array = genre_match_recommender(get_anime_name_from_code(5114), weight_dict)
-    # for item in test_array:
-    #     print(get_anime_name_from_code(item))
+    weight_dict = {"score":0.0, "popularity":0.0, "members":0.00, "scored_by":0.00, "similarity":1.0}
+    test_array = genre_match_recommender(get_anime_name_from_code(5114), weight_dict)
+    for item in test_array:
+        print(get_anime_name_from_code(item))
 
-    # score = score_individual_rec(get_anime_name_from_code(5114), test_array)
-    # print(score)
+    score = score_individual_rec(get_anime_name_from_code(5114), test_array)
+    print(score)
 
     # HYPERPARAMETER TUNING TESTING
-    weight_dict = {"score":0.1, "popularity":0.1, "members":0.05, "scored_by":0.05, "similarity":0.7}
-    for score in np.arange(0.05, 0.20, 0.05):
-        for popularity in np.arange(0.05, 0.20, 0.05):
-            sim = 1 - score - popularity - 0.1
-            weight_dict = {"score":score, "popularity":popularity, "members":0.05, "scored_by":0.05, "similarity":sim}
-            avg_indv_ndcg = random_individual_scoring(test_size=0.3, weight_dict=weight_dict)
-            print("NDCG: {:.2f}, score_%: {:.2f}, pop_%: {:.2f}, sim_%: {:.2f}".format(avg_indv_ndcg, score, popularity, sim))
+    # weight_dict = {"score":0.1, "popularity":0.1, "members":0.05, "scored_by":0.05, "similarity":0.7}
+    # for score in np.arange(0.05, 0.20, 0.05):
+    #     for popularity in np.arange(0.05, 0.20, 0.05):
+    #         sim = 1 - score - popularity - 0.1
+    #         weight_dict = {"score":score, "popularity":popularity, "members":0.05, "scored_by":0.05, "similarity":sim}
+    #         avg_indv_ndcg = random_individual_scoring(test_size=0.3, weight_dict=weight_dict)
+    #         print("NDCG: {:.2f}, score_%: {:.2f}, pop_%: {:.2f}, sim_%: {:.2f}".format(avg_indv_ndcg, score, popularity, sim))
 
     # # LARGE (RANDOMLY SELECTED) TEST SET SCORING
     # average_ndcg = random_scoring(test_size=0.3)
