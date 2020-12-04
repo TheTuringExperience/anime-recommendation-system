@@ -6,7 +6,6 @@ import pandas as pd
 
 from sklearn.metrics.pairwise import pairwise_distances
 from sklearn.metrics import jaccard_score
-from utils import preprocess_names, get_anime_code_from_name
 
 # TODO: Fix pathing in the future based on these guidelines - http://python-notes.curiousefficiency.org/en/latest/python_concepts/import_traps.html
 # anime_genres_df = pd.read_pickle("./algorithms/genre_match/anime_genres_df.pkl")
@@ -20,10 +19,9 @@ def calculate_ranking_score(row, config_dict):
     similarity = row['similarity'] * config_dict['similarity']
     return score + popularity + members + scored_by + similarity
 
-def genre_match_recommender(anime_name: str, weight_dict) -> List[int]:
+def genre_match_recommender(anime_code: int, weight_dict) -> List[int]:
     try:
-        df = full_df.copy()
-        anime_code = get_anime_code_from_name(anime_name)
+        df = full_df.copy()        
         anime_data = df.loc[anime_code]
         df.drop(anime_code, axis=0, inplace=True)  # Drop the anime row to make sure it's not recommended
 

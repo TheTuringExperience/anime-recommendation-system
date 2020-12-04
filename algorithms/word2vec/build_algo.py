@@ -26,8 +26,7 @@ from utils import preprocess_names
 def preprocess_data():
     # Reading the data
     relevant_fields = ["code", "show_titles", "score"]
-    code_df = pd.read_csv("../../data/anime_data.csv")[relevant_fields]
-    code_df["name"] = [names_l[0] for names_l in preprocess_names(code_df["show_titles"].to_list())]
+    code_df = pd.read_csv("../../data/anime_data.csv")[relevant_fields]    
     # Read the review data
     reviews_dir = "../../data/reviews"
     all_reviews = list()
@@ -82,9 +81,9 @@ def preprocess_data():
     df['cleaned'] = df.cleaned.apply(func = remove_stop_words)
     df['cleaned'] = df.cleaned.apply(func=remove_punctuation)
     df['cleaned'] = df.cleaned.apply(func=remove_html)
-    df.name = df.name.apply(lambda x: re.sub(r"\s\s*", " ", re.sub(r"[\-\_]", " ", x)) )
+    
     with open("./review_df.pkl", "wb") as filehandle:
-        pickle.dump(df[['name', 'code']], filehandle)
+        pickle.dump(df[['code']], filehandle)
         filehandle.close()
 
     return df
@@ -120,7 +119,7 @@ def train_word2vec(df: pd.DataFrame, use_saved_file: bool=False):
     google_model.train(corpus, total_examples=google_model.corpus_count, epochs = 5)
 
     # Generate the average word2vec for the each set of anime reviews
-    def vectors(x: pd.DataFrame):
+    def _vectors(x: pd.DataFrame):
         
         # Creating a list for storing the vectors (description into vectors)        
         array_embeddings = []
@@ -143,7 +142,7 @@ def train_word2vec(df: pd.DataFrame, use_saved_file: bool=False):
                 array_embeddings.append(avgword2vec)
         return array_embeddings
     # Calling the function vectors
-    embeddings = vectors(df)        
+    embeddings = _vectors(df)
 
     with open('w2v_embeddings.data', 'wb') as filehandle:
         # store the data as binary data stream
@@ -155,10 +154,10 @@ def train_word2vec(df: pd.DataFrame, use_saved_file: bool=False):
 def recommendations(title: str, df: pd.DataFrame, embeddings):
     try:
         # taking the title and score to store in new data frame called animes
-        animes_df = df[['name', 'score']]
+        animes_df = df[['code', 'score']]
 
         #Reverse mapping of the index
-        indices = pd.Series(animes_df.index, index = animes_df['name']).drop_duplicates()# Recommending the Top 5 similar animes
+        indices = pd.Series(animes_df.index, index = animes_df['code']).drop_duplicates()# Recommending the Top 5 similar animes
         # drop all duplicate occurrences of the labels 
         indices = indices.groupby(indices.index).first()
 
@@ -173,7 +172,7 @@ def recommendations(title: str, df: pd.DataFrame, embeddings):
         results = animes_df.iloc[[idx for idx, _ in results[1:closest_n+1] ]]
                    
         for index, row in results.iterrows():
-            print(f'{row["name"]} score: {row["score"]}')            
+            print(f'{row["code"]} score: {row["score"]}')            
 
     except Exception as e:
         print(f"Error making the recommendation {e}")
@@ -189,7 +188,7 @@ def main():
     # tfidf_cosine_similarities = train_tfidf_word2vec(df, use_saved_file=False)
 
     print("\nRecommendations using word2vec:")
-    recommendations('cowboy bebop', df, embeddings)
+    recommendations(5114, df, embeddings)
 
 if __name__ == "__main__":
     main()

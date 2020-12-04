@@ -15,7 +15,7 @@ relevant_fields = ["show_titles", "score", "code", "premiered", "genres"]
 animes_df = pd.read_csv(anime_data_path, encoding="utf-8")[relevant_fields]
 
 #create a list of genres using the "genres" column in the animes_df
-genres = list({genre  for genres_list in animes_df.genres.tolist() 
+genres = list({genre for genres_list in animes_df.genres.tolist() 
                         for genre in genres_list.split(";")})
 
 #create a one_hot encoded representation of each genre
