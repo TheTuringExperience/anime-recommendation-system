@@ -9,6 +9,14 @@ def preprocess_names(anime_names: List) -> List[str]:
                 for name_l in names_lists]
     return names_lists
 
+def preprocess_names_with_codes(anime_names_codes: List) -> List:
+    names_codes_lists = [names.split(";;") + [str(code)] for names, code in anime_names_codes]
+    
+    names_codes_lists = [list(map(lambda s: re.sub(r'[^\w\s]', '', s.lower()), name_l))
+                        for name_l in names_codes_lists]
+                   
+    return names_codes_lists
+
 def get_anime_code_from_name(anime_name: str) -> int:
     relevant_fields = ["code", "show_titles"]
     anime_data = pd.read_csv("data/anime_data.csv", encoding="utf-8")[relevant_fields]
