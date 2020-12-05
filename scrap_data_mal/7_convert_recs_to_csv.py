@@ -1,6 +1,11 @@
 from os import listdir
 from os.path import isfile, join
 import pandas as pd
+import requests
+import time
+from bs4 import BeautifulSoup
+
+TIME_BETWEEN_REQ = 2
 
 rec_folder_path = "../data/recommendations"
 recfiles = [f for f in listdir(rec_folder_path) if isfile(join(rec_folder_path, f))]
@@ -25,4 +30,22 @@ full_df["min"] = full_df[["mal_id", "query_id"]].min(axis=1)
 full_df = full_df.sort_values('query_id', ascending=True).drop_duplicates(subset=['max', 'min'])
 full_df = full_df.drop(['query_id', 'mal_id'], axis=1)
 full_df = full_df.rename(columns={"max": "mal_id_0", "min": "mal_id_1"})
+full_df = full_df.reset_index(drop=True)
+
+number_of_rows = full_df.shape[0]
+def get_user_written_recs(row):
+    time.sleep(TIME_BETWEEN_REQ)
+    page = requests.get("https://myanimelist.net/recommendations/anime/{}-{}".format(row['mal_id_0'], row['mal_id_1']))
+    soup = BeautifulSoup(page.content, 'html.parser')
+    spans = soup.find_all('span', {'style' : 'white-space: pre-wrap;'})
+
+    lines = [span.get_text() for span in spans]
+    line = lines[0].replace('\n','')
+    line = line.replace('\r','')
+    line = line.replace('\"','')
+    print('Completed: {} of {}'.format(row.name, number_of_rows))
+    return line
+
+full_df['text'] = full_df.apply(lambda row: get_user_written_recs(row),axis=1)
+
 full_df.to_csv('../data/recommendations.csv', index=False, header=True)
