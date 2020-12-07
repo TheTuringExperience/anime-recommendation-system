@@ -40,10 +40,14 @@ def get_user_written_recs(row):
     spans = soup.find_all('span', {'style' : 'white-space: pre-wrap;'})
 
     lines = [span.get_text() for span in spans]
-    line = lines[0].replace('\n','')
-    line = line.replace('\r','')
-    line = line.replace('\"','')
-    print('Completed: {} of {}'.format(row.name, number_of_rows))
+    line = "-"
+    try:
+        line = lines[0].replace('\n','')
+        line = line.replace('\r','')
+        line = line.replace('\"','')
+        print('Completed: {} of {}'.format(row.name, number_of_rows))
+    except Exception as e:
+        print('Failed: {}, {}'.format(row.name, e))
     return line
 
 full_df['text'] = full_df.apply(lambda row: get_user_written_recs(row),axis=1)
