@@ -27,12 +27,16 @@ def obtain_recommendations(anime_code: int) -> Dict[str, List[str]]:
     hot = get_info_from_code(recommender_algorithms["soft_clustering"](anime_code, "premiered"), anime_code)
     beloved = get_info_from_code(recommender_algorithms["soft_clustering"](anime_code, "score"), anime_code)
     similar_synopsis = get_info_from_code(recommender_algorithms["synopsis_similarity"](anime_code), anime_code)
+    genre_match = get_info_from_code(recommender_algorithms["genre_match"](anime_code, weight_dict={"score":0.2,"popularity":0.2, 
+                                                                                "members":0.2, "scored_by":0.2,
+                                                                                "similarity":0.2}))
     
     #assing each group of recommendations to its respective row
     recom["similarly_described"] = similar
     recom["hot"] = hot
     recom["beloved"] = beloved
     recom["similar_synopsis"] = similar_synopsis
+    recom["genre_match"] = genre_match
 
     return recom
 
