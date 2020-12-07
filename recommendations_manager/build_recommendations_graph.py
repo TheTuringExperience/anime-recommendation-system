@@ -12,7 +12,7 @@ def create_nodes(G: nx.Graph):
 
 def create_edges(G: nx.Graph):
     for idx, row in user_recoms_df.iterrows():
-        G.add_edge(row["mal_id_0"], row["mal_id_1"], weight=row["relevance"])
+        G.add_edge(row["mal_id_0"], row["mal_id_1"], weight=row["relevance"], text=row["text"])
 
 def main():
     graph = nx.Graph()
