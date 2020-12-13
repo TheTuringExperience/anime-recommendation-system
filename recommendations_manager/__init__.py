@@ -40,11 +40,6 @@ def obtain_recommendations(anime_code: int) -> Dict[str, List[str]]:
 
     return recom
 
-def obtain_random_recommendations(num_recommendations: int) -> Dict:
-    recom = defaultdict(list)
-    recom["random"] = get_info_from_code(recommender_algorithms["random"](num_recommendations))
-    return recom
-
 def get_info_from_code(codes: List[int], input_anime: int = 0):
     recommendations_info = []
     for code in codes:
@@ -66,3 +61,15 @@ def get_recommendation_weight(input_anime: int, recommended_anime: int):
         weight = int(edges.get(recommended_anime, {}).get("weight", 0))
         text = edges.get(recommended_anime, {}).get("text", "")
         return {"relevance":weight, "text": text}
+
+def obtain_random_recommendations(num_recommendations: int) -> Dict:
+    recom = defaultdict(list)
+    recom["random"] = get_info_from_code(recommender_algorithms["random"](num_recommendations))
+    return recom
+
+def get_single_anime_info(anime_code: int):
+    try:
+        info = anime_info_df.loc[anime_info_df["code"] == anime_code][relevant_fields].to_dict('records')[0]
+        return info
+    except:
+        return {}

@@ -7,7 +7,7 @@ from fastapi import FastAPI, Query, status
 from fastapi.responses import JSONResponse
 
 from utils import preprocess_names_with_codes
-from recommendations_manager import obtain_recommendations, obtain_random_recommendations
+from recommendations_manager import obtain_recommendations, obtain_random_recommendations, get_single_anime_info
 
 api = FastAPI()
 
@@ -21,7 +21,7 @@ async def get_recommendations(anime_code: int = Query("")):
         recommendations = obtain_recommendations(anime_code)
         return JSONResponse(content=recommendations, status_code=200)
 
-    return JSONResponse(content={"Error": "The anime name is missing"}, status_code=400)
+    return JSONResponse(content={"Error": "The anime code is missing"}, status_code=400)
 
 @api.get("/api/v1/get_random_recommendations")
 async def get_random_recommendations(n: Optional[int] = Query(10, gt=0, le=20)):
@@ -32,3 +32,8 @@ async def get_random_recommendations(n: Optional[int] = Query(10, gt=0, le=20)):
 async def get_names():
     names = {"names": names_lists}
     return JSONResponse(content=names, status_code=200)
+
+@api.get("/api/v1/get_anime")
+async def get_anime(anime_code: int = Query(0)):
+    anime_info = get_single_anime_info(anime_code)
+    return JSONResponse(content=anime_info, status_code=200)
