@@ -15,25 +15,25 @@ anime_names_codes = pd.read_csv("data/anime_data.csv")[["show_titles", "code"]].
 #Split the concatenated anime names to get list of the names of an anime
 names_lists = preprocess_names_with_codes(anime_names_codes)
  
-@api.get("/api/v1/get_recommendations")
-async def get_recommendations(anime_code: int = Query("")):    
+@api.get("/api/v1/recommendations")
+async def recommendations(anime_code: int = Query("")):    
     if anime_code:
         recommendations = obtain_recommendations(anime_code)
         return JSONResponse(content=recommendations, status_code=200)
 
     return JSONResponse(content={"Error": "The anime code is missing"}, status_code=400)
 
-@api.get("/api/v1/get_random_recommendations")
-async def get_random_recommendations(n: Optional[int] = Query(10, gt=0, le=20)):
+@api.get("/api/v1/random_recommendations")
+async def random_recommendations(n: Optional[int] = Query(10, gt=0, le=20)):
     recommendations = obtain_random_recommendations(n)
     return JSONResponse(content=recommendations, status_code=200)
 
-@api.get("/api/v1/get_names")
-async def get_names():
+@api.get("/api/v1/names")
+async def names():
     names = {"names": names_lists}
     return JSONResponse(content=names, status_code=200)
 
-@api.get("/api/v1/get_anime")
-async def get_anime(anime_code: int = Query(0)):
+@api.get("/api/v1/anime")
+async def anime(anime_code: int = Query(0)):
     anime_info = get_single_anime_info(anime_code)
     return JSONResponse(content=anime_info, status_code=200)
