@@ -1,5 +1,6 @@
 import re
 from typing import List
+
 import pandas as pd
 
 def preprocess_names(anime_names: List) -> List[str]:
@@ -9,13 +10,16 @@ def preprocess_names(anime_names: List) -> List[str]:
                 for name_l in names_lists]
     return names_lists
 
-def preprocess_names_with_codes(anime_names_codes: List) -> List:
-    names_codes_lists = [names.split(";;") + [str(code)] for names, code in anime_names_codes]
+def preprocess_anime_info(animes_list: List) -> List:    
+    search_data = []
+    for anime in animes_list:
+        titles = anime["show_titles"].split(";;")
+        data = {"anime_id":anime["code"], "display_title": titles[0],
+                "alternate_titles": list(map(lambda s: s.lower(), titles[1:])),  "type": anime["type"],
+                "release_date":anime["premiered"], "image_url": anime["image_url"]}                
+        search_data.append(data)
+    return search_data
     
-    names_codes_lists = [list(map(lambda s: re.sub(r'[^\w\s]', '', s.lower()), name_l))
-                        for name_l in names_codes_lists]
-                   
-    return names_codes_lists
 
 def get_anime_code_from_name(anime_name: str) -> int:
     relevant_fields = ["code", "show_titles"]

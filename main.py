@@ -6,14 +6,14 @@ import pandas as pd
 from fastapi import FastAPI, Query, status
 from fastapi.responses import JSONResponse
 
-from utils import preprocess_names_with_codes
+from utils import preprocess_anime_info
 from recommendations_manager import obtain_recommendations, obtain_random_recommendations, get_single_anime_info
 
 api = FastAPI()
 
-anime_names_codes = pd.read_csv("data/anime_data.csv")[["show_titles", "code"]].to_numpy().tolist()
+anime_data = pd.read_csv("data/anime_data.csv")[["show_titles", "code", "image_url", "type", "premiered"]].to_dict("records")
 #Split the concatenated anime names to get list of the names of an anime
-names_lists = preprocess_names_with_codes(anime_names_codes)
+anime_data = preprocess_anime_info(anime_data)
  
 @api.get("/api/v1/recommendations")
 async def recommendations(anime_code: int = Query("")):    
@@ -28,10 +28,10 @@ async def random_recommendations(n: Optional[int] = Query(10, gt=0, le=20)):
     recommendations = obtain_random_recommendations(n)
     return JSONResponse(content=recommendations, status_code=200)
 
-@api.get("/api/v1/names")
-async def names():
-    names = {"names": names_lists}
-    return JSONResponse(content=names, status_code=200)
+@api.get("/api/v1/search_info")
+async def search_info():
+    search_info = {"search_info": anime_data}
+    return JSONResponse(content=search_info, status_code=200)
 
 @api.get("/api/v1/anime")
 async def anime(anime_code: int = Query(0)):
