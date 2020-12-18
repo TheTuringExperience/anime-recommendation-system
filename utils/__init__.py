@@ -16,7 +16,7 @@ def preprocess_anime_info(animes_list: List) -> List:
         titles = anime["show_titles"].split(";;")
         data = {"anime_id":anime["code"], "display_title": titles[0],
                 "alternate_titles": list(map(lambda s: s.lower(), titles[1:])),  "type": anime["type"],
-                "release_date":anime["premiered"], "image_url": anime["image_url"]}                
+                "genres":anime["genres"].split(";"), "release_date":anime["premiered"], "image_url": anime["image_url"]}              
         search_data.append(data)
     return search_data
     
