@@ -93,7 +93,7 @@ def get_anime_data(anime_url: str):
 
 
 def save_data(animes: List):    
-    with open(os.path.join(DATA_DIR, "anime_data_2.json"), "w") as j:
+    with open(os.path.join(DATA_DIR, "anime_data.json"), "w") as j:
         json.dump(animes, j)
         j.close()
     logging.info(" The data was succesfully saved!")
