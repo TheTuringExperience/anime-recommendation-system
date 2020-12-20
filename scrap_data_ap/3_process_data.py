@@ -1,6 +1,7 @@
 """ Process the data at ../data/anime_planet/anime_data.json and saves it in ../data/anime_planet/process_data.py"""
 
 import os
+import re
 import json
 from typing import List
 
@@ -32,8 +33,13 @@ def process_charactes_data(anime_data: List):
         characters_data.extend(show_characters)
 
     df = pd.DataFrame(characters_data)    
-    df.dropna(inplace=True)
+    #Get a characters name from their url 
+    df["name"] = df.character_url.apply(lambda x: x.split("/")[-1])    
+    #We don't need the character url field
+    df.drop(["character_url"], axis=1, inplace=True)
+    #Join the character tags into a string
     df["character_tags"] = df.character_tags.apply(lambda t: ";".join(t))
+    
     df.to_csv("../data/anime_planet/characters_data.csv", encoding="utf-8", index=False)
 
 
@@ -41,7 +47,7 @@ def process_anime_data(df: pd.DataFrame):
     #Remove the characters data
     df.drop(["characters_data"], axis=1, inplace=True)
     #Remove \n character from the rank, titles and tags
-    df["rank"] = df["rank"].apply(lambda s: str(s).replace("\n", ""))
+    df["rank"] = df["rank"].apply(lambda s: re.sub(r"\D", "", s))
     df["alt_titles"] = df.alt_titles.apply(lambda s: str(s).replace("\n", ""))
     df["tags"] = df["tags"].apply(lambda x: ";".join(list(map(lambda s: s.replace("\n", ""), x))))
     
