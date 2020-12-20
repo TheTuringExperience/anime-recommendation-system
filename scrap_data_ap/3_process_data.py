@@ -48,7 +48,7 @@ def process_anime_data(df: pd.DataFrame):
     df.drop(["characters_data"], axis=1, inplace=True)
     #Remove \n character from the rank, titles and tags
     df["rank"] = df["rank"].apply(lambda s: re.sub(r"\D", "", s))
-    df["alt_titles"] = df.alt_titles.apply(lambda s: str(s).replace("\n", ""))
+    df["alt_titles"] = df.alt_titles.apply(lambda s: re.sub("(Alt title:\s|\n)", "", s))
     df["tags"] = df["tags"].apply(lambda x: ";".join(list(map(lambda s: s.replace("\n", ""), x))))
     
     df.to_csv("../data/anime_planet/anime_data.csv", encoding="utf-8", index=False)
