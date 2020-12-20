@@ -7,7 +7,7 @@ import json
 import time
 import logging
 
-from typing import List
+from typing import List, Dict
 
 from requests import get
 from bs4 import BeautifulSoup
@@ -30,7 +30,7 @@ def get_links() -> List[str]:
     return links[idx+1:]
 
 
-def parse_anime_page(anime_url: str):
+def parse_anime_page(anime_url: str) -> Dict:
     #Make the request to get the anime page
     response = get(url=anime_url)
 
@@ -54,7 +54,7 @@ def parse_anime_page(anime_url: str):
     return {"title": title, "year": year, "rank": rank, "alt_titles": alt_titles, "tags": tags}
 
 
-def parse_character_page(anime_url: str):
+def parse_character_page(anime_url: str) -> List:
     #Make the request to the characters page
     response = get(url=anime_url+"/characters")
 
@@ -73,7 +73,7 @@ def parse_character_page(anime_url: str):
     return characters_data
 
 
-def get_anime_data(anime_url: str):
+def get_anime_data(anime_url: str) -> List:
     url = BASE_URL+anime_url
     name = url.split("/")[-1]
 
