@@ -43,8 +43,7 @@ def get_info_from_code(codes: List[int], input_anime: int = 0):
     recommendations_info = []
     for code in codes:
         try:
-            recom_info = anime_info_df.loc[anime_info_df["code"] == code][relevant_fields].to_dict('records')[0]
-            recom_info["user_recommendation"] = get_recommendation_weight(input_anime, recom_info.get('code', 0))
+            recom_info = anime_info_df.loc[anime_info_df["code"] == code][relevant_fields].to_dict('records')[0]            
             recommendations_info.append(recom_info)
         except:            
             continue
