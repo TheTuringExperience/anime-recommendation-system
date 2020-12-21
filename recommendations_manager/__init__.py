@@ -55,7 +55,7 @@ def get_recommendation_weight(input_anime: int, recommended_anime: int):
     try:
         edges = G[input_anime]
     except KeyError:        
-        return 0
+        return {"relevance": 0, "text": ""}
     else:
         weight = int(edges.get(recommended_anime, {}).get("weight", 0))
         text = edges.get(recommended_anime, {}).get("text", "")

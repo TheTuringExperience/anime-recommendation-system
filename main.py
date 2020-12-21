@@ -7,7 +7,8 @@ from fastapi import FastAPI, Query, status
 from fastapi.responses import JSONResponse
 
 from utils import preprocess_anime_info
-from recommendations_manager import obtain_recommendations, obtain_random_recommendations, get_single_anime_info
+from recommendations_manager import (obtain_recommendations, obtain_random_recommendations, 
+                                    get_single_anime_info, get_recommendation_weight)
 
 api = FastAPI()
 
@@ -37,3 +38,8 @@ async def search_info():
 async def anime(anime_code: int = Query(0)):
     anime_info = get_single_anime_info(anime_code)
     return JSONResponse(content=anime_info, status_code=200)
+
+@api.get("/api/v1/user_recommendations")
+async def user_recommendations(search_anime: int = Query(0), recommended_anime: int = Query(0)):
+    recommendation_weight = get_recommendation_weight(search_anime, recommended_anime)
+    return JSONResponse(content=recommendation_weight, status_code=200)
