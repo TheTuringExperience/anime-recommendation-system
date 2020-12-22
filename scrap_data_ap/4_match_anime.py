@@ -64,7 +64,7 @@ def main():
     start_t = time.time()
     ap_data["mal_code"] = match_names(mal_data, ap_data)    
     print(f"{time.time() - start_t}")
-    ap_data.to_csv("./anime_data.csv", encoding="utf-8", index=False)
+    ap_data.to_csv("../data/anime_planet/anime_data.csv", encoding="utf-8", index=False)
 
 
 if __name__ == "__main__":
