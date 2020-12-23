@@ -4,8 +4,6 @@ from typing import List
 import numpy as np
 import pandas as pd
 
-from utils import preprocess_names
-
 relevant_fields = ["code", "show_titles", "genres", "premiered", "score"]
 
 # TODO: Fix pathing in the future based on these guidelines - http://python-notes.curiousefficiency.org/en/latest/python_concepts/import_traps.html
