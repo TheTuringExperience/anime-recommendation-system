@@ -33,7 +33,8 @@ def process_ap_names(titles: pd.DataFrame):
 
 def match_names(mal_data: pd.DataFrame, ap_data: pd.DataFrame):
     codes = []
-    #TODO: This takes waaay too long to exccute
+    mal_data.code = mal_data.code.astype(int)
+    #TODO: This code is pretty much O(n^3)
     #We iterate over all the anime_planet anime titles
     for p_names in ap_data.processed_names:
         match_found = False
@@ -55,15 +56,16 @@ def match_names(mal_data: pd.DataFrame, ap_data: pd.DataFrame):
 def main():
     mal_data = pd.read_csv("../data/anime_data.csv", encoding="utf-8")
     ap_data = pd.read_csv("../data/anime_planet/anime_data.csv", encoding="utf-8")
-    # Remove any empty values
+    #Fill in any empty values
     ap_data.fillna("", inplace=True)
-    ap_data.dropna(subset=["tags"], inplace=True)
     
     mal_data["processed_names"] = mal_data.show_titles.apply(process_mal_names)
-    ap_data["processed_names"] = process_ap_names(ap_data.title + ";;" + ap_data.alt_titles)
-    start_t = time.time()
-    ap_data["mal_code"] = match_names(mal_data, ap_data)    
-    print(f"{time.time() - start_t}")
+    ap_data["processed_names"] = process_ap_names(ap_data.title + ";;" + ap_data.alt_titles)    
+    ap_data["mal_code"] = match_names(mal_data, ap_data)
+
+    #Drop any show with no mal_code
+    ap_data.dropna(subset=["mal_code"], inplace=True)
+
     ap_data.to_csv("../data/anime_planet/anime_data.csv", encoding="utf-8", index=False)
 
 
