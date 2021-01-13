@@ -7,38 +7,67 @@ from typing import List, Dict
 
 from numpy.random import choice
 import pandas as pd
-from algorithms import *
+import networkx as nx
+
+from utils import preprocess_names
+from algorithms import * 
 
 anime_info_df = pd.read_csv("data/anime_data.csv", encoding="utf-8")
+anime_info_df["name"] = [names_l[0] for names_l in preprocess_names(anime_info_df["show_titles"].to_list())]
 
-relevant_fields = ['full_title', 'code', 'score', 'image_url', 'synopsis', 'premiered', 'type', 'genres']
+G = nx.readwrite.gpickle.read_gpickle("recommendations_manager/graph.pkl")
 
-def obtain_recommendations(name: str) -> Dict[str, List[str]]:
+relevant_fields = ['show_titles', 'code', 'score', 'image_url', 'synopsis', 'premiered', 'type', 'genres']
+
+def obtain_recommendations(anime_code: int) -> Dict[str, List[str]]:
     recom = defaultdict(list)    
+    
     #get the codes of the recommendations from the algorithms and then get the info about them
-    similar = get_info_from_code(recommender_algorithms["similarity_search"](name.strip()))
-    hot = get_info_from_code(recommender_algorithms["soft_clustering"](name.strip(), "premiered"))
-    beloved = get_info_from_code(recommender_algorithms["soft_clustering"](name.strip(), "score"))
-    similar_synopsis = get_info_from_code(recommender_algorithms["synopsis_similarity"](name.strip()))
+    similar = get_info_from_code(recommender_algorithms["similarity_search"](anime_code), anime_code)
+    hot = get_info_from_code(recommender_algorithms["soft_clustering"](anime_code, "premiered"), anime_code)
+    beloved = get_info_from_code(recommender_algorithms["soft_clustering"](anime_code, "score"), anime_code)
+    similar_synopsis = get_info_from_code(recommender_algorithms["synopsis_similarity"](anime_code), anime_code)
+    genre_match = get_info_from_code(recommender_algorithms["genre_match"](anime_code, weight_dict={"score":0.1, "popularity":0.1, "members":0.05, "scored_by":0.05, "similarity":0.7}))
     
     #assing each group of recommendations to its respective row
     recom["similarly_described"] = similar
     recom["hot"] = hot
     recom["beloved"] = beloved
     recom["similar_synopsis"] = similar_synopsis
+    recom["genre_match"] = genre_match
 
     return recom
 
-def obtain_random_recommendations(num_recommendations: int):
+def get_info_from_code(codes: List[int], input_anime: int = 0):
+    recommendations_info = []
+    for code in codes:
+        try:
+            recom_info = anime_info_df.loc[anime_info_df["code"] == code][relevant_fields].to_dict('records')[0]
+            recom_info["user_recommendation"] = get_recommendation_weight(input_anime, recom_info.get('code', 0))
+            recommendations_info.append(recom_info)
+        except:            
+            continue
+
+    return recommendations_info
+
+def get_recommendation_weight(input_anime: int, recommended_anime: int):
+    try:
+        edges = G[input_anime]
+    except KeyError:        
+        return 0
+    else:
+        weight = int(edges.get(recommended_anime, {}).get("weight", 0))
+        text = edges.get(recommended_anime, {}).get("text", "")
+        return {"relevance":weight, "text": text}
+
+def obtain_random_recommendations(num_recommendations: int) -> Dict:
     recom = defaultdict(list)
     recom["random"] = get_info_from_code(recommender_algorithms["random"](num_recommendations))
     return recom
 
-def get_info_from_code(codes: List[int]):
-    recommendations_info = []
-    for code in codes:
-        try:
-            recommendations_info.append(anime_info_df.loc[anime_info_df["code"] == code][relevant_fields].to_dict('records')[0])
-        except:
-            continue
-    return recommendations_info
+def get_single_anime_info(anime_code: int):
+    try:
+        info = anime_info_df.loc[anime_info_df["code"] == anime_code][relevant_fields].to_dict('records')[0]
+        return info
+    except:
+        return {}

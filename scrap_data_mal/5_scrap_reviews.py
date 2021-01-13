@@ -13,10 +13,14 @@ from jikanpy import Jikan
 
 logging.basicConfig(level=logging.ERROR)
 
+base_dir = "../data/reviews"
 source = "../data/anime_data.csv"
 codes_df = pd.read_csv(source)
 num_reviews = 5
-time_between_requests = 3  # in seconds
+time_between_requests = 4  # in seconds
+
+if not os.path.isdir(base_dir):  # If the base_dir does not exist create it
+    os.mkdir(base_dir)
 
 jikan = Jikan()
 
@@ -42,19 +46,19 @@ for index, row in codes_df.iterrows():
             continue
 
     except Exception as e:
-        logging.error(f"Problems getting data for {row['name']}: " + str(e))
+        logging.error(f"Problems getting data for {row['code']}: " + str(e))
         continue
 
     #if the anime has no reviews then there is no point in making a file for it
     if reviews:
         line_list = []
-        with open(f"../data/reviews/{row['code']}.txt", "w", encoding="utf-8") as f:
+        with open(os.path.join(base_dir, f"{row['code']}.txt"), "w", encoding="utf-8") as f:
             for review in reviews:                     
                 line_list.append(re.sub(r"\s\s+", " ", review["content"].replace("\\n", " ")) + '\n')
             f.writelines(line_list)
             f.close()        
-        print("Collected #{}: {}-{}".format(index, row['code'], row['name']))
+        print("Collected #{}: {}".format(index, row['code']))
 
     else:
-        logging.error(f"No reviews available for {row['name']}")
+        logging.error(f"No reviews available for {row['code']}")
         continue
