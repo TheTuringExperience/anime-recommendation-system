@@ -19,7 +19,7 @@ def calculate_ranking_score(row, config_dict):
     similarity = row['similarity'] * config_dict['similarity']
     return score + popularity + members + scored_by + similarity
 
-def genre_match_recommender(anime_code: int, weight_dict) -> List[int]:
+def genre_match_recommender(anime_code: int, n_recommendations:int, weight_dict) -> List[int]:
     try:
         df = full_df.copy()        
         anime_data = df.loc[anime_code]
@@ -29,14 +29,11 @@ def genre_match_recommender(anime_code: int, weight_dict) -> List[int]:
         cols_to_keep = ["score", "popularity", "members", "scored_by", "similarity"]
         df = df[cols_to_keep]
         df['ranking_score'] = df.apply(calculate_ranking_score, axis=1, args=(weight_dict,))
-        # print(df.head())
-
-        # df = pd.concat([df,full_df.score], axis=1)
-        # df = df[df.similarity != 1.0]
 
         df = df.sort_values(by=["ranking_score"], ascending=False)
-        recommendations = df.iloc[:5].index.tolist()    
+        recommendations = df.iloc[:n_recommendations].index.tolist()    
         return recommendations
+
     except Exception as e:
         print(e)    
         return []

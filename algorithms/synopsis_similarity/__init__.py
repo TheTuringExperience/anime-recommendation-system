@@ -13,19 +13,18 @@ anime_data = pd.read_csv("data/anime_data.csv", encoding="utf-8")[relevant_field
 synopsis_embeddings = np.load(open("algorithms/synopsis_similarity/synopsis_embeddings.npy", "rb"))
 anime_codes = pickle.load(open("algorithms/synopsis_similarity/anime_codes.pkl", "rb"))
 
-def synopsis_similarity_recommender(anime_code: int):
+def synopsis_similarity_recommender(anime_code: int, n_recommendations: int):
     try:        
         query_embedding = synopsis_embeddings[anime_codes.index(anime_code)]
         
-        closest_n = 5    
         distances = scipy.spatial.distance.cdist([query_embedding], synopsis_embeddings, "cosine")[0]
 
         results = zip(range(len(distances)), distances)
         results = sorted(results, key=lambda x: x[1])
-        results = [anime_codes[idx] for idx, _ in results[1:closest_n+1]]
+        results = [anime_codes[idx] for idx, _ in results[1:n_recommendations+1]]
         
         return results
 
     except Exception as e:
-        print(e)        
+        print(e)
         return []

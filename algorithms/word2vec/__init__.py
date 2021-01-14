@@ -9,7 +9,7 @@ with open('./algorithms/word2vec/w2v_embeddings.data', 'rb') as filehandle:
 
 animes_df = pd.read_pickle("./algorithms/word2vec/review_df.pkl")
 
-def similarity_recommendator(anime_code: str) -> List[str]:
+def similarity_recommendator(anime_code: str, n_recommendations: int) -> List[str]:
     try:
 
         #Reverse mapping of the index
@@ -20,14 +20,13 @@ def similarity_recommendator(anime_code: str) -> List[str]:
         idx = indices[anime_code]
         query_embedding = embeddings[idx]
         
-        closest_n = 5    
         distances = scipy.spatial.distance.cdist([query_embedding], embeddings, "cosine")[0]
 
         results = zip(range(len(distances)), distances)
         results = sorted(results, key=lambda x: x[1])
-        recommendations = animes_df.iloc[[idx for idx, _ in results[1:closest_n+1] ]].code.tolist()
+        recommendations = animes_df.iloc[[idx for idx, _ in results[1:n_recommendations+1] ]].code.tolist()
         
         return recommendations
     except Exception as e:
-        print("Word2Vec:", e)
+        print(e)
         return []
