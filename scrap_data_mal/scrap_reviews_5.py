@@ -13,11 +13,11 @@ from jikanpy import Jikan
 
 logging.basicConfig(level=logging.ERROR)
 
-base_dir = "../data/reviews"
+base_dir = "../data/reviews_small"
 source = "../data/anime_data.csv"
 codes_df = pd.read_csv(source)
 num_reviews = 5
-time_between_requests = 4  # in seconds
+time_between_requests = 3  # in seconds
 
 if not os.path.isdir(base_dir):  # If the base_dir does not exist create it
     os.mkdir(base_dir)
@@ -25,7 +25,7 @@ if not os.path.isdir(base_dir):  # If the base_dir does not exist create it
 jikan = Jikan()
 
 #scrap the reviews starting from the lower_bound
-for index, row in codes_df.iterrows():
+for index, row in codes_df.iloc[4023:].iterrows():
     # Put an upper bound on the amoun of reviews to reduce the inbalance problem
     try:
         reviews = jikan.anime(row["code"], extension='reviews')['reviews'][:num_reviews]

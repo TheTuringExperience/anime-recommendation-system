@@ -9,7 +9,7 @@ from jikanpy import Jikan
 from jikanpy.exceptions import APIException
 import pandas as pd
 
-from get_extra_data import * 
+from get_extra_data_3 import * 
 
 jikan = Jikan()
 
@@ -24,8 +24,8 @@ def get_basic_info(year: int, season: str):
     return seasonal_anime_data
 
 if __name__ == "__main__":
-    year = 2020
-    season = "fall"
+    year = 2021
+    season = "winter"
     basic_info = get_basic_info(year, season)
     animes_info = get_extra_information(basic_info)
     store_info(animes_info)
