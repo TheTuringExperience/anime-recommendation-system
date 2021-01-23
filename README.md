@@ -24,7 +24,7 @@ NOTE: you can skip the first 2 steps if you just download the prebuilt models he
 
 1. First you'd need to scrape the data using the python scripts (ordered 1-5) in the ./scrap_data folder
     - `cd scrap_data`
-    - `python 1_scrap_by_genre.py`
+    - `python scrap_by_genre_1.py`
 2. Then you'll have to build the algorithms from the data scraped, you can do this by running the individual build_algo.py files in each algorithms/*/. folder. For examples:
     - `cd algorithms`
     - `cd word2vec`
@@ -32,7 +32,7 @@ NOTE: you can skip the first 2 steps if you just download the prebuilt models he
 3. Finally, once you have the files you need, you can run the following to set up the API and see it running on port localhost:8000
     - `uvicorn main:api --reload`
 
-You can check out the system in action [here](http://3.131.210.47:5000/)
+You can check out the system in action [here](http://18.218.236.96:3000/)
 
 You can also find the repo for the UI [here](https://github.com/chriskok/AnimeRec)
 
