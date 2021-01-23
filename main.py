@@ -17,7 +17,7 @@ anime_data = pd.read_csv("data/anime_data.csv")[["show_titles", "code", "image_u
 anime_data = preprocess_anime_info(anime_data)
  
 @api.get("/api/v1/recommendations")
-async def recommendations(anime_code: int = Query(""), n_recommendations: int = Query(5)):    
+async def recommendations(anime_code: int = Query(""), n_recommendations: int = Query(5, gt=1, le=20)):    
     if anime_code:
         recommendations = obtain_recommendations(anime_code, n_recommendations)
         return JSONResponse(content=recommendations, status_code=200)
