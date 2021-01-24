@@ -18,17 +18,13 @@ from sklearn.metrics.pairwise import cosine_similarity
 from gensim.models import Word2Vec
 from gensim.models import KeyedVectors
 
-sys.path.append("../../") #TODO: This is a hack, find a better way
-
-from utils import preprocess_names
-
 
 def preprocess_data():
     # Reading the data
     relevant_fields = ["code", "show_titles", "score"]
     code_df = pd.read_csv("../../data/anime_data.csv")[relevant_fields]    
     # Read the review data
-    reviews_dir = "../../data/reviews"
+    reviews_dir = "../../data/reviews_small"
     all_reviews = list()
 
     for index, review_doc in enumerate(os.listdir(reviews_dir)):
@@ -182,7 +178,7 @@ def main():
     df = preprocess_data()
 
     # if you need to retrain or don't have the saved .data file, set use_saved_file to False
-    embeddings = train_word2vec(df, use_saved_file=True)
+    embeddings = train_word2vec(df, use_saved_file=False)
 
     # if you need to retrain or don't have the saved .data file, set use_saved_file to False
     # tfidf_cosine_similarities = train_tfidf_word2vec(df, use_saved_file=False)
