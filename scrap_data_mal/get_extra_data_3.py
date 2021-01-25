@@ -75,8 +75,6 @@ def store_info(animes_data: List):
             j.seek(0)
             json.dump(file_content, j, ensure_ascii=False)
 
-from pickle import load
-
 def main():
     animes_data = get_extra_information(animes_df["code"].to_numpy().tolist())
     store_info(animes_data)
