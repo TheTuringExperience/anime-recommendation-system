@@ -10,7 +10,19 @@ from utils import preprocess_anime_info
 from recommendations_manager import (obtain_recommendations, obtain_random_recommendations, 
                                     get_single_anime_info, get_recommendation_weight)
 
+from fastapi.middleware.cors import CORSMiddleware
+
+
 api = FastAPI()
+
+api.add_middleware(
+    CORSMiddleware,
+    # allow_origins=["*"],
+    allow_origin_regex='https?://.*',
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 anime_data = pd.read_csv("data/anime_data.csv")[["show_titles", "code", "image_url", "type", "genres", "premiered"]].to_dict("records")
 #Split the concatenated anime names to get list of the names of an anime
