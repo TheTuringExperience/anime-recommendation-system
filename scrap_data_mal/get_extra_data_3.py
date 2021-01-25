@@ -34,13 +34,12 @@ def make_request(code: int, sleep_time: int) -> List:
     
     return [response]
 
-def get_extra_information(animes_info: List) -> List:
+def get_extra_information(anime_codes: List) -> List:
     data = []
     time_between_requests = 3
 
-    for code, name, score in animes_info:        
+    for code in anime_codes:
         try:
-            
             data.extend(make_request(code, time_between_requests))
 
         except APIException as e:
@@ -63,21 +62,23 @@ def get_extra_information(animes_info: List) -> List:
     return data
 
 def store_info(animes_data: List): 
-    filepath = "../data/anime_data.json"
+    filepath = "../data/missing_anime_data.json"
     # If the file containing the anime data does not exist then create it
     if not os.path.exists(filepath):
         with open(filepath, "w", encoding="utf-8") as j:            
             json.dump(animes_data, j, ensure_ascii=False)        
     # If it exists then just append to it
     else:
-        with open("../data/anime_data.json", "r+", encoding="utf-8") as j:
+        with open(filepath, "r+", encoding="utf-8") as j:
             file_content = json.load(j)            
             file_content.extend(animes_data)
             j.seek(0)
             json.dump(file_content, j, ensure_ascii=False)
 
+from pickle import load
+
 def main():
-    animes_data = get_extra_information(animes_df.to_numpy().tolist())
+    animes_data = get_extra_information(animes_df["code"].to_numpy().tolist())
     store_info(animes_data)
 
 if __name__ == "__main__":
