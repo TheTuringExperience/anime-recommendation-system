@@ -16,6 +16,8 @@ This system uses deep learning algorithms, along side other techniques, to give 
 
 * **Soft Clustering:** This system returns the highest rated animes with the most amount of genres in common with the inserted anime as recommendations. It can also return the most recent animes with the most amount of genres in common with the inserted anime (We did some alpha testing and people requested this last feature to be added </3)
 
+* **Character Similarity:** This systems uses the very detailed character tags from [Anime-Planet](https://www.anime-planet.com/characters/) to make recommendations. It uses the tags of an anime's main character and finds similar characters in other shows which it returns as the recommenedations.
+
 * **Validation:** This isn't a recommender algorithm but it's the one we'll use to determine the quality of recommendations churned out by the above algorithsm. It uses the NDCG metrics for scoring the relevance and the order of the suggested algorithms. The true relevance scores are currently determined by crowd sourced recommendations in MAL. The validation pipeline will also be used to measure prediction accuracy for hyperparameter tuning (for example, we could test with logistic regression on tag vectors, genre vectors, release date, director, etc. and tune hyperparameters to find most suitable set). Keep in mind when comparing completely different rows that seasonality or popularity plays a big deal in the score (new or less known animes don't have as much say in recs). Hence, it shouldn't be used to judge items all too harshly; we might even consider training models to find out what makes these recommendations work and use those as metrics in the future.
 
 ### Usage:
