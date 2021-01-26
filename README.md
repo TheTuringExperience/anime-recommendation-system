@@ -34,8 +34,5 @@ NOTE: you can skip the first 2 steps if you just download the prebuilt models he
 3. Finally, once you have the files you need, you can run the following to set up the API and see it running on port localhost:8000
     - `uvicorn main:api --reload`
 
-You can check out the system in action [here](http://18.218.236.96:3000/)
 
-You can also find the repo for the UI [here](https://github.com/chriskok/AnimeRec)
-
-
+You can find the repo for the UI [here](https://github.com/chriskok/AnimeRec)
