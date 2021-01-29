@@ -3,7 +3,7 @@ import pickle
 import scipy
 import pandas as pd
 
-with open('./algorithms/word2vec/w2v_embeddings.data', 'rb') as filehandle:
+with open('./algorithms/word2vec/w2v_embeddings_randomanime.data', 'rb') as filehandle:
             # read the data as binary data stream
             embeddings = pickle.load(filehandle)    
 

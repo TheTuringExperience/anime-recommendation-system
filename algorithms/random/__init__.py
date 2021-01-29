@@ -5,8 +5,7 @@ import numpy as np
 import pandas as pd
 
 relevent_fields = ["code", "score"]
-animes_df = pd.read_csv("./data/anime_data.csv", encoding="utf-8")[relevent_fields]
-animes_df = animes_df[animes_df.score>=7.5]
+animes_df = pd.read_csv("./data/anime_data_randomanime.csv", encoding="utf-8")[relevent_fields]
 
 def random_recommender(num_recommendations: int = 5) -> List[int]:
     try:

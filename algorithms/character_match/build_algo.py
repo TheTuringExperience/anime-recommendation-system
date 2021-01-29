@@ -6,7 +6,7 @@ import pandas as pd
 
 from sklearn.preprocessing import MultiLabelBinarizer
 
-ap_df = pd.read_csv("../../data/anime_planet/anime_data.csv", encoding="utf-8")
+ap_df = pd.read_csv("../../data/anime_planet/anime_data_randomanime.csv", encoding="utf-8")
 characters_df = pd.read_csv("../../data/anime_planet/characters_data.csv", encoding="utf-8")
 
 #Join characters data with the data of the show they appear in

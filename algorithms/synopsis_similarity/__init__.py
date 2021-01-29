@@ -8,10 +8,10 @@ import scipy.spatial
 import pandas as pd
 
 relevant_fields = ["code", "show_titles"]
-anime_data = pd.read_csv("data/anime_data.csv", encoding="utf-8")[relevant_fields]
+anime_data = pd.read_csv("data/anime_data_randomanime.csv", encoding="utf-8")[relevant_fields]
 
-synopsis_embeddings = np.load(open("algorithms/synopsis_similarity/synopsis_embeddings.npy", "rb"))
-anime_codes = pickle.load(open("algorithms/synopsis_similarity/anime_codes.pkl", "rb"))
+synopsis_embeddings = np.load(open("algorithms/synopsis_similarity/synopsis_embeddings_randomanime.npy", "rb"))
+anime_codes = pickle.load(open("algorithms/synopsis_similarity/anime_codes_randomanime.pkl", "rb"))
 
 def synopsis_similarity_recommender(anime_code: int, n_recommendations: int):
     try:        

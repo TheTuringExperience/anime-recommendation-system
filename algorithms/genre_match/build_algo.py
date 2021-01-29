@@ -11,7 +11,7 @@ import datetime as dt
 from sklearn.preprocessing import MultiLabelBinarizer, MinMaxScaler
 from sklearn.metrics.pairwise import pairwise_distances
 
-anime_data_path = "../../data/anime_data.csv"
+anime_data_path = "../../data/anime_data_randomanime.csv"
 
 # relevant_fields = ["show_titles", "score", "code", "premiered", "genres", "popularity", "members","scored_by","type","rating"]
 relevant_fields = ["show_titles", "score", "code", "premiered", "genres", "popularity", "members","scored_by"]
