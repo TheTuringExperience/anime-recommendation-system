@@ -25,7 +25,7 @@ if not os.path.isdir(base_dir):  # If the base_dir does not exist create it
 jikan = Jikan()
 
 #scrap the reviews starting from the lower_bound
-for index, row in codes_df.iloc[4023:].iterrows():
+for index, row in codes_df.iterrows():
     # Put an upper bound on the amoun of reviews to reduce the inbalance problem
     try:
         reviews = jikan.anime(row["code"], extension='reviews')['reviews'][:num_reviews]
