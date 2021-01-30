@@ -24,7 +24,7 @@ api.add_middleware(
     allow_headers=["*"],
 )
 
-anime_data = pd.read_csv("data/anime_data.csv")[["show_titles", "code", "image_url", "type", "genres", "premiered"]].to_dict("records")
+anime_data = pd.read_csv("data/anime_data_randomanime.csv")[["show_titles", "code", "image_url", "type", "genres", "premiered"]].to_dict("records")
 #Split the concatenated anime names to get list of the names of an anime
 anime_data = preprocess_anime_info(anime_data)
  
