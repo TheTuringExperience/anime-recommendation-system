@@ -8,28 +8,16 @@ from fastapi.responses import JSONResponse
 
 from utils import preprocess_anime_info
 from recommendations_manager import (obtain_recommendations, obtain_random_recommendations, 
-                                    get_single_anime_info, get_recommendation_weight)
-
-from fastapi.middleware.cors import CORSMiddleware
-
+                                    get_single_anime_info, get_recommendation_weight, test_timing)
 
 api = FastAPI()
 
-api.add_middleware(
-    CORSMiddleware,
-    # allow_origins=["*"],
-    allow_origin_regex='https?://.*',
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-anime_data = pd.read_csv("data/anime_data_randomanime.csv")[["show_titles", "code", "image_url", "type", "genres", "premiered"]].to_dict("records")
+anime_data = pd.read_csv("data/anime_data.csv")[["show_titles", "code", "image_url", "type", "genres", "premiered"]].to_dict("records")
 #Split the concatenated anime names to get list of the names of an anime
 anime_data = preprocess_anime_info(anime_data)
  
 @api.get("/api/v1/recommendations")
-async def recommendations(anime_code: int = Query(""), n_recommendations: int = Query(5, gt=1, le=20)):    
+async def recommendations(anime_code: int = Query(""), n_recommendations: int = Query(5)):    
     if anime_code:
         recommendations = obtain_recommendations(anime_code, n_recommendations)
         return JSONResponse(content=recommendations, status_code=200)
@@ -55,3 +43,11 @@ async def anime(anime_code: int = Query(0)):
 async def user_recommendations(search_anime: int = Query(0), recommended_anime: int = Query(0)):
     recommendation_weight = get_recommendation_weight(search_anime, recommended_anime)
     return JSONResponse(content=recommendation_weight, status_code=200)
+ 
+@api.get("/api/v1/test_timings")
+async def test_timings(anime_code: int = Query(""), n_recommendations: int = Query(5)):    
+    if anime_code:
+        recommendations = test_timing(anime_code, n_recommendations)
+        return JSONResponse(content=recommendations, status_code=200)
+
+    return JSONResponse(content={"Error": "The anime code is missing"}, status_code=400)

@@ -2,6 +2,7 @@
 
 import os
 import pickle
+import time
 from collections import defaultdict
 from typing import List, Dict
 
@@ -73,3 +74,46 @@ def get_single_anime_info(anime_code: int):
         return info
     except:
         return {}
+
+def test_timing(anime_code: int, n_recommendations: int) -> Dict[str, List[str]]:
+
+    current_time = time.time()
+    recom = defaultdict(list)    
+    
+    #get the codes of the recommendations from the algorithms and then get the info about them
+    similar = get_info_from_code(recommender_algorithms["similarity_search"](anime_code, n_recommendations), anime_code)
+    print(time.time() - current_time)
+    current_time = time.time()
+
+    hot = get_info_from_code(recommender_algorithms["soft_clustering"](anime_code, "premiered", n_recommendations), anime_code)
+    print(time.time() - current_time)
+    current_time = time.time()
+
+    beloved = get_info_from_code(recommender_algorithms["soft_clustering"](anime_code, "score", n_recommendations), anime_code)
+    print(time.time() - current_time)
+    current_time = time.time()
+
+    similar_synopsis = get_info_from_code(recommender_algorithms["synopsis_similarity"](anime_code, n_recommendations), anime_code)
+    print(time.time() - current_time)
+    current_time = time.time()
+
+    genre_match = get_info_from_code(recommender_algorithms["genre_match"](anime_code, n_recommendations, weight_dict={"score":0.1, "popularity":0.1, "members":0.05, "scored_by":0.05, "similarity":0.7}))
+    print(time.time() - current_time)
+    current_time = time.time()
+
+    characters_match = get_info_from_code(recommender_algorithms["character_match"](anime_code, n_recommendations))  
+    print(time.time() - current_time)
+    current_time = time.time()
+  
+
+    #assing each group of recommendations to its respective row
+    recom["similarly_described"] = similar
+    recom["hot"] = hot
+    recom["beloved"] = beloved
+    recom["similar_synopsis"] = similar_synopsis
+    recom["genre_match"] = genre_match
+    recom["characters_match"] = characters_match
+    print(time.time() - current_time)
+    current_time = time.time()
+
+    return recom
