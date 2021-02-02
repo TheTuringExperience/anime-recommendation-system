@@ -3,13 +3,18 @@ from typing import List
 
 import numpy as np
 import pandas as pd
+import pickle
 
 from sklearn.metrics.pairwise import pairwise_distances
 from sklearn.metrics import jaccard_score
 
 # TODO: Fix pathing in the future based on these guidelines - http://python-notes.curiousefficiency.org/en/latest/python_concepts/import_traps.html
 # anime_genres_df = pd.read_pickle("./algorithms/genre_match/anime_genres_df.pkl")
-full_df = pd.read_pickle("./algorithms/genre_match/full_df.pkl")
+
+# full_df = pd.read_pickle("./algorithms/genre_match/full_df.pkl")
+all_recommendations_dict = {}
+with open('./algorithms/genre_match/all_recs.pickle', 'rb') as handle:
+    all_recommendations_dict = pickle.load(handle)
 
 def calculate_ranking_score(row, config_dict):
     score = row['score'] * config_dict['score']
@@ -19,7 +24,7 @@ def calculate_ranking_score(row, config_dict):
     similarity = row['similarity'] * config_dict['similarity']
     return score + popularity + members + scored_by + similarity
 
-def genre_match_recommender(anime_code: int, n_recommendations:int, weight_dict) -> List[int]:
+def genre_match_recommender_old(anime_code: int, n_recommendations:int, weight_dict) -> List[int]:
     try:
         df = full_df.copy()        
         anime_data = df.loc[anime_code]
@@ -33,6 +38,14 @@ def genre_match_recommender(anime_code: int, n_recommendations:int, weight_dict)
         df = df.sort_values(by=["ranking_score"], ascending=False)
         recommendations = df.iloc[:n_recommendations].index.tolist()    
         return recommendations
+
+    except Exception as e:
+        print(e)    
+        return []
+
+def genre_match_recommender(anime_code: int, n_recommendations:int, weight_dict) -> List[int]:
+    try:
+        return all_recommendations_dict[float(anime_code)][0:n_recommendations]
 
     except Exception as e:
         print(e)    

@@ -7,6 +7,7 @@ __pycache__/
 *.ann
 *.gz
 *.pkl
+*.pickle
 *.data
 *.xml
 .ipynb_checkpoints/
