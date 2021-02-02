@@ -13,7 +13,7 @@ from sklearn.metrics import jaccard_score
 
 # full_df = pd.read_pickle("./algorithms/genre_match/full_df.pkl")
 all_recommendations_dict = {}
-with open('./algorithms/genre_match/all_recs.pickle', 'rb') as handle:
+with open('./algorithms/genre_match/genre_match_recs.pickle', 'rb') as handle:
     all_recommendations_dict = pickle.load(handle)
 
 def calculate_ranking_score(row, config_dict):

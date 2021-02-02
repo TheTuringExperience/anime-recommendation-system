@@ -82,7 +82,7 @@ def main():
         count += 1
         if (count % 100 == 0): print('Processed: {}'.format(count))
         
-    with open('all_recs.pickle', 'wb') as handle:
+    with open('genre_match_recs.pickle', 'wb') as handle:
         pickle.dump(all_recommendations_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
     
     print('Finished: {}'.format(len(all_recommendations_dict)))
@@ -94,6 +94,6 @@ if __name__ == "__main__":
     # anime_code = 11757
     # n_recommendations = 15
 
-    # with open('all_recs.pickle', 'rb') as handle:
+    # with open('genre_match_recs.pickle', 'rb') as handle:
     #     all_recommendations_dict = pickle.load(handle)
     #     print(all_recommendations_dict[float(anime_code)][0:n_recommendations])
