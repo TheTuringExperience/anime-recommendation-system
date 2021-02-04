@@ -22,3 +22,4 @@ recommender_algorithms_randomanime = {
     "soft_clustering_new": soft_clustering_new_randomanime,
     "soft_clustering_popularity": soft_clustering_popularity_randomanime
 }
+    

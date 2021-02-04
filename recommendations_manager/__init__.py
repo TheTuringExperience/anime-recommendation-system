@@ -86,7 +86,7 @@ def test_timing(anime_code: int, n_recommendations: int) -> Dict[str, List[str]]
     recom = defaultdict(list)    
     
     #get the codes of the recommendations from the algorithms and then get the info about them
-    similar = get_info_from_code(recommender_algorithms["similarity_search"](anime_code, n_recommendations), anime_code)
+    similar = get_info_from_code(recommender_algorithms["review_similarity"](anime_code, n_recommendations), anime_code)
     print(time.time() - current_time)
     current_time = time.time()
 
@@ -102,11 +102,11 @@ def test_timing(anime_code: int, n_recommendations: int) -> Dict[str, List[str]]
     print(time.time() - current_time)
     current_time = time.time()
 
-    genre_match = get_info_from_code(recommender_algorithms["genre_match"](anime_code, n_recommendations, weight_dict={"score":0.1, "popularity":0.1, "members":0.05, "scored_by":0.05, "similarity":0.7}))
+    genre_match = get_info_from_code(recommender_algorithms["genre_similarity"](anime_code, n_recommendations, weight_dict={"score":0.1, "popularity":0.1, "members":0.05, "scored_by":0.05, "similarity":0.7}))
     print(time.time() - current_time)
     current_time = time.time()
 
-    characters_match = get_info_from_code(recommender_algorithms["character_match"](anime_code, n_recommendations))  
+    characters_match = get_info_from_code(recommender_algorithms["character_similarity"](anime_code, n_recommendations))  
     print(time.time() - current_time)
     current_time = time.time()
   
