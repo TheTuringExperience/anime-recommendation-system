@@ -13,7 +13,8 @@ anime_data = pd.read_csv("data/anime_data_randomanime.csv", encoding="utf-8")[re
 synopsis_embeddings = np.load(open("algorithms/synopsis_similarity/synopsis_embeddings_randomanime.npy", "rb"))
 anime_codes = pickle.load(open("algorithms/synopsis_similarity/anime_codes_randomanime.pkl", "rb"))
 
-def synopsis_similarity_recommender(anime_code: int, n_recommendations: int):
+
+def synopsis_similarity(anime_code: int, n_recommendations: int):
     try:        
         query_embedding = synopsis_embeddings[anime_codes.index(anime_code)]
         
@@ -28,3 +29,20 @@ def synopsis_similarity_recommender(anime_code: int, n_recommendations: int):
     except Exception as e:
         print(e)
         return []
+
+def synopsis_similarity_randomanime(anime_code: str, page_number: int, page_size: int = 50):
+    try:        
+        query_embedding = synopsis_embeddings[anime_codes.index(anime_code)]
+        
+        distances = scipy.spatial.distance.cdist([query_embedding], synopsis_embeddings, "cosine")[0]
+
+        results = zip(range(len(distances)), distances)
+        results = sorted(results, key=lambda x: x[1])
+        offset = page_size * (page_number - 1)
+        result = [anime_codes[idx] for idx, _ in results[offset+1:(page_number*page_size) + 1]]
+        
+        return result
+
+    except Exception as e:
+        print(e)
+        return [] 

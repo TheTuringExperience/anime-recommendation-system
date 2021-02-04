@@ -3,6 +3,7 @@
 import os
 import pickle
 import time
+import json
 from collections import defaultdict
 from typing import List, Dict
 
@@ -21,16 +22,20 @@ G = nx.readwrite.gpickle.read_gpickle("recommendations_manager/graph.pkl")
 
 relevant_fields = ['show_titles', 'code', 'score', 'image_url', 'synopsis', 'premiered', 'type', 'genres']
 
+def obtain_recommendations_randomanime(anime_code: int, algorithm: str, page_number: int, page_size: int = 50) -> Dict[str, List[str]]:
+    recommendation = {"random_anime_code": recommender_algorithms_randomanime[algorithm](anime_code, page_number, page_size)}
+    return recommendation
+
 def obtain_recommendations(anime_code: int, n_recommendations: int) -> Dict[str, List[str]]:
     recom = defaultdict(list)    
     
     #get the codes of the recommendations from the algorithms and then get the info about them
-    similar = get_info_from_code(recommender_algorithms["similarity_search"](anime_code, n_recommendations), anime_code)
+    similar = get_info_from_code(recommender_algorithms["review_similarity"](anime_code, n_recommendations), anime_code)
     hot = get_info_from_code(recommender_algorithms["soft_clustering"](anime_code, "premiered", n_recommendations), anime_code)
     beloved = get_info_from_code(recommender_algorithms["soft_clustering"](anime_code, "score", n_recommendations), anime_code)
     similar_synopsis = get_info_from_code(recommender_algorithms["synopsis_similarity"](anime_code, n_recommendations), anime_code)
-    genre_match = get_info_from_code(recommender_algorithms["genre_match"](anime_code, n_recommendations, weight_dict={"score":0.1, "popularity":0.1, "members":0.05, "scored_by":0.05, "similarity":0.7}))
-    characters_match = get_info_from_code(recommender_algorithms["character_match"](anime_code, n_recommendations))    
+    genre_match = get_info_from_code(recommender_algorithms["genre_similarity"](anime_code, n_recommendations))
+    characters_match = get_info_from_code(recommender_algorithms["character_similarity"](anime_code, n_recommendations))    
 
     #assing each group of recommendations to its respective row
     recom["similarly_described"] = similar
