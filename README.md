@@ -1,6 +1,6 @@
 # Anime Recommendation System
 
-You can find it [here](http://3.131.210.47/)
+#### You can try it [here](http://3.131.210.47/)
 
 ### Motivation:
 ------
