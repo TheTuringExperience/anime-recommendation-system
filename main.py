@@ -30,7 +30,7 @@ async def recommendations_randomanime(anime_code: int, algorithm: Algorithms, pa
     if anime_code:
         recommendations = obtain_recommendations_randomanime(anime_code, algorithm, page_number, page_size)
         return JSONResponse(content=recommendations, status_code=200)
-    return JSONResponse(content=recommendations, status_code=400)
+    return JSONResponse(content={"Error": "There was a error processing the request"}, status_code=500)
 
 @api.get("/api/v1/recommendations")
 async def recommendations(anime_code: int = Query(""), n_recommendations: int = Query(5)):    
