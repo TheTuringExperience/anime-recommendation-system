@@ -76,7 +76,9 @@ def main():
         df['ranking_score'] = df.apply(calculate_ranking_score, axis=1, args=(weight_dict,))
 
         df = df.sort_values(by=["ranking_score"], ascending=False)
-        recommendations = df.iloc[1:].index.tolist()    
+        recommendations = df.iloc[0:].index.tolist()  
+        recommendations.remove(anime_code)  
+
         all_recommendations_dict[anime_code] = recommendations
 
         count += 1
