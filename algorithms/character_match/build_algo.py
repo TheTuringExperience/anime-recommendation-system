@@ -12,11 +12,11 @@ characters_df = pd.read_csv("../../data/anime_planet/characters_data.csv", encod
 #Join characters data with the data of the show they appear in
 characters_df = characters_df.join(ap_df.set_index("url"), how="inner", on="anime_url")
 #Take only the necessary fields
-characters_df = characters_df[["mal_code", "character_tags", "name"]]
+characters_df = characters_df[["mal_code", "main_characters_tags", "name"]]
 #Remove any missing fields
 characters_df.dropna(inplace=True)
 
-tags = set([tag.lower() for tags_list in characters_df.character_tags.tolist()
+tags = set([tag.lower() for tags_list in characters_df.main_characters_tags.tolist()
                for tag in tags_list.split(";")])
 #Create a categorical representation of the character tags
 mlb = MultiLabelBinarizer()
@@ -30,7 +30,7 @@ def get_tags_vector(tags_str: str) -> List:
 
 
 def main():    
-    characters_df.character_tags = characters_df.character_tags.apply(get_tags_vector)
+    characters_df.main_characters_tags = characters_df.main_characters_tags.apply(get_tags_vector)
     characters_df.to_pickle("./characters_df.pkl")
 
 

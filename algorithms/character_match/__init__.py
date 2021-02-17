@@ -14,7 +14,7 @@ def character_match(anime_code: int, n_recommendations:int):
         # Drop the anime to make sure it's not recommended
         df.drop(characters_data.index, axis=0, inplace=True)
 
-        df["similarity"] = df.character_tags.map(lambda x: np.dot(x, characters_data["character_tags"].to_numpy()[0]))
+        df["similarity"] = df.main_characters_tags.map(lambda x: np.dot(x, characters_data["main_characters_tags"].to_numpy()[0]))
         df = df.sort_values(by=["similarity"], ascending=False)
         #Drop duplicated anime
         df.drop_duplicates(subset=["mal_code"], inplace=True)
@@ -33,7 +33,7 @@ def character_match_randomanime(anime_code: int, page_number: int, page_size: in
         # Drop the anime to make sure it's not recommended
         df.drop(characters_data.index, axis=0, inplace=True)
 
-        df["similarity"] = df.character_tags.map(lambda x: np.dot(x, characters_data["character_tags"].to_numpy()[0]))
+        df["similarity"] = df.main_characters_tags.map(lambda x: np.dot(x, characters_data["main_characters_tags"].to_numpy()[0]))
         df = df.sort_values(by=["similarity"], ascending=False)
         #Drop duplicated anime
         df.drop_duplicates(subset=["mal_code"], inplace=True)
