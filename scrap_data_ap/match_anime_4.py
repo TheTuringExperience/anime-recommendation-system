@@ -54,7 +54,7 @@ def match_names(mal_data: pd.DataFrame, ap_data: pd.DataFrame):
 
 
 def main():
-    mal_data = pd.read_csv("../data/anime_data.csv", encoding="utf-8")
+    mal_data = pd.read_csv("../data/anime_data_randomanime.csv", encoding="utf-8")
     ap_data = pd.read_csv("../data/anime_planet/anime_data.csv", encoding="utf-8")
     #Fill in any empty values
     ap_data.fillna("", inplace=True)
@@ -63,6 +63,7 @@ def main():
     ap_data["processed_names"] = process_ap_names(ap_data.title + ";;" + ap_data.alt_titles)    
     ap_data["mal_code"] = match_names(mal_data, ap_data)
 
+    ap_data.drop("processed_names", axis=1, inplace=True)
     #Drop any show with no mal_code
     ap_data.dropna(subset=["mal_code"], inplace=True)
 

@@ -44,13 +44,22 @@ def process_charactes_data(anime_data: List):
 
 
 def process_anime_data(df: pd.DataFrame):    
-    #Remove the characters data
-    df.drop(["characters_data"], axis=1, inplace=True)
-    #Remove \n character from the rank, titles and tags
+    #Remove \n special character from the rank, titles and tags
     df["rank"] = df["rank"].apply(lambda s: re.sub(r"\D", "", s))
     df["alt_titles"] = df.alt_titles.apply(lambda s: re.sub("(Alt title:\s|\n)", "", s))
     df["tags"] = df["tags"].apply(lambda x: ";".join(list(map(lambda s: s.replace("\n", ""), x))))
-    
+
+    characters_tags = []
+    for idx, row in df.iterrows():
+        tags = []
+        for character in row["characters_data"]:
+            tags.extend(character["character_tags"])
+        tags = set(tags)
+        characters_tags.append(";".join(tags))
+
+    df.drop(["characters_data"], axis=1, inplace=True)  
+
+    df["main_characters_tags"] = characters_tags
     df.to_csv("../data/anime_planet/anime_data.csv", encoding="utf-8", index=False)
 
 
