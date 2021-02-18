@@ -63,7 +63,7 @@ def main():
 
     output_df = pd.concat([initial_df, jac_sim], axis=1)
     # print(output_df.head())
-    # output_df.to_pickle("./full_df.pkl")
+    output_df.to_pickle("./full_df.pkl")
 
     df = output_df.copy()    
     anime_codes = output_df.index.values.tolist() 
@@ -76,7 +76,7 @@ def main():
         df['ranking_score'] = df.apply(calculate_ranking_score, axis=1, args=(weight_dict,))
 
         df = df.sort_values(by=["ranking_score"], ascending=False)
-        recommendations = df.iloc[0:].index.tolist()  
+        recommendations = df.index.tolist()  
         recommendations.remove(anime_code)  
 
         all_recommendations_dict[anime_code] = recommendations

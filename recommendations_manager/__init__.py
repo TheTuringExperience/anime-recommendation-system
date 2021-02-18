@@ -66,7 +66,10 @@ def get_recommendation_weight(input_anime: int, recommended_anime: int):
     else:
         weight = int(edges.get(recommended_anime, {}).get("weight", 0))
         text = edges.get(recommended_anime, {}).get("text", "")
-        return {"relevance":weight, "text": text}
+        ranking_score = float(edges.get(recommended_anime, {}).get("ranking_score", 0.0))
+        return {"relevance":weight, "text": text, "ranking_score": ranking_score}
+
+    # TODO: give ranking score even without relevance and text
 
 def obtain_random_recommendations(num_recommendations: int) -> Dict:
     recom = defaultdict(list)
