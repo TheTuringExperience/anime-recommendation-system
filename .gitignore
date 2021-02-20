@@ -10,6 +10,7 @@ __pycache__/
 *.pickle
 *.data
 *.xml
+*.joblib
 .ipynb_checkpoints/
 experiment/
 data/reviews/
