@@ -5,6 +5,7 @@ from typing import List
 import pandas as pd
 
 from sklearn.preprocessing import MultiLabelBinarizer
+from joblib import dump
 
 ap_df = pd.read_csv("../../data/anime_planet/anime_data_randomanime.csv", encoding="utf-8")
 characters_df = pd.read_csv("../../data/anime_planet/characters_data.csv", encoding="utf-8")
@@ -20,17 +21,18 @@ tags = set([tag.lower() for tags_list in characters_df.main_characters_tags.toli
                for tag in tags_list.split(";")])
 #Create a categorical representation of the character tags
 mlb = MultiLabelBinarizer()
-mlb.fit([[tag] for tag in tags])
+mlb.fit([[tag.lower()] for tag in tags])
 
 
 def get_tags_vector(tags_str: str) -> List:
     tags = tags_str.split(";")
-    tags_vector = mlb.transform([[tag.lower()] for tag in tags])[0]
+    tags_vector = mlb.transform([[ tag.lower() for tag in tags]])[0]
     return tags_vector
 
 
 def main():    
     characters_df.main_characters_tags = characters_df.main_characters_tags.apply(get_tags_vector)
+    dump(mlb, "./character_tags_encoder.joblib")
     characters_df.to_pickle("./characters_df.pkl")
 
 
