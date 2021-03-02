@@ -34,11 +34,11 @@ def soft_clustering_popularity_randomanime(anime_code: int, page_number: int, pa
         df = df.sort_values(by=[str("score"), "similarity"], ascending=False)
         offset = page_size * (page_number - 1)
         recommendations = df.iloc[offset:page_number*page_size].code.tolist() 
-        return recommendations
+        return recommendations, []
 
     except Exception as e:
         print(e)    
-        return []
+        return [], []
 
 def soft_clustering_new_randomanime(anime_code: int, page_number: int, page_size: int = 50) -> List[int]:
     try:
@@ -50,8 +50,8 @@ def soft_clustering_new_randomanime(anime_code: int, page_number: int, page_size
         df = df.sort_values(by=[str("premiered"), "similarity"], ascending=False)
         offset = page_size * (page_number - 1)
         recommendations = df.iloc[offset:page_number*page_size].code.tolist()    
-        return recommendations
+        return recommendations, []
 
     except Exception as e:
         print(e)    
-        return []
+        return [], []

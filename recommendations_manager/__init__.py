@@ -23,7 +23,12 @@ G = nx.readwrite.gpickle.read_gpickle("recommendations_manager/graph.pkl")
 relevant_fields = ['show_titles', 'code', 'score', 'image_url', 'synopsis', 'premiered', 'type', 'genres']
 
 def obtain_recommendations_randomanime(anime_code: int, algorithm: str, page_number: int, page_size: int = 50) -> Dict[str, List[str]]:
-    recommendation = {"random_anime_code": recommender_algorithms_randomanime[algorithm](anime_code, page_number, page_size)}
+    codes, explanation = recommender_algorithms_randomanime[algorithm](anime_code, page_number, page_size)
+    #TODO: Make the genre_similarity algorithm return XAI data along with the recommendations
+    if algorithm == "genre_similarity": 
+        explanation = [get_recommendation_weight(anime_code, rec_code) for rec_code in codes]
+
+    recommendation = {"random_anime_code":codes, "explanation":explanation}
     return recommendation
 
 def obtain_recommendations(anime_code: int, n_recommendations: int) -> Dict[str, List[str]]:

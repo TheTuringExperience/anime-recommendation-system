@@ -31,18 +31,27 @@ def synopsis_similarity(anime_code: int, n_recommendations: int):
         return []
 
 def synopsis_similarity_randomanime(anime_code: str, page_number: int, page_size: int = 50):
-    try:        
-        query_embedding = synopsis_embeddings[anime_codes.index(anime_code)]
-        
-        distances = scipy.spatial.distance.cdist([query_embedding], synopsis_embeddings, "cosine")[0]
+    def _normalize(val, min_v, max_v):        
+            return 1 - (val - min_v)/(max_v - min_v)
 
-        results = zip(range(len(distances)), distances)
+    try:
+
+        query_embedding = synopsis_embeddings[anime_codes.index(anime_code)]
+        distances = scipy.spatial.distance.cdist([query_embedding], synopsis_embeddings, "cosine")[0]    
+        results = zip(range(len(distances)), distances)    
         results = sorted(results, key=lambda x: x[1])
-        offset = page_size * (page_number - 1)
-        result = [anime_codes[idx] for idx, _ in results[offset+1:(page_number*page_size) + 1]]
         
-        return result
+        #The first result is always the input anime itself
+        min_v = min(results[1:], key=lambda x: x[1])[1]
+        max_v = max(results[:], key=lambda x: x[1])[1]
+        
+        offset = page_size * (page_number - 1)
+        result = [(anime_codes[idx], int(_normalize(sim, min_v, max_v) * 100)) 
+                for idx, sim in results[offset+1:(page_number*page_size) + 1]]
+
+        codes, similarity_score = list(zip(*result))
+        return codes, similarity_score
 
     except Exception as e:
         print(e)
-        return [] 
+        return [], []

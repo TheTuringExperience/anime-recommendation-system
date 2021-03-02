@@ -30,8 +30,8 @@ def genre_match_randomanime(anime_code: int, page_number:int, page_size:int = 50
     try:
         offset = page_size * (page_number - 1)
         recommendations = all_recommendations_dict[float(anime_code)][offset:page_number*page_size]
-        return recommendations
+        return recommendations, []
         
     except Exception as e:
         print(e)    
-        return []
+        return [], []
