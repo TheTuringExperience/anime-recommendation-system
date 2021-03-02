@@ -25,10 +25,7 @@ def get_links() -> List[str]:
         for line in f.readlines():
             links.append(line[:-1])
         f.close()
-    #Offset 
-    idx = links.index("/anime/is-the-order-a-rabbit-dear-my-sister")
-    return links[idx+1:]
-
+    return links
 
 def parse_anime_page(anime_url: str) -> Dict:
     #Make the request to get the anime page
@@ -93,7 +90,7 @@ def get_anime_data(anime_url: str) -> List:
 
 
 def save_data(animes: List):    
-    with open(os.path.join(DATA_DIR, "anime_data.json"), "w") as j:
+    with open(os.path.join(DATA_DIR, DESTINATION_FILE), "w") as j:
         json.dump(animes, j)
         j.close()
     logging.info(" The data was succesfully saved!")
