@@ -34,8 +34,8 @@ for index, row in codes_df.iterrows():
         logging.error(f"The server did not respond when scrapping {index}: " + str(e))
         
         try:
-            print("Retrying after 15 seconds...")
-            time.sleep(15)
+            print("Retrying after 30 seconds...")
+            time.sleep(30)
             recommendations = jikan.anime(row["code"], extension='recommendations')['recommendations']
 
         except APIException as e:
