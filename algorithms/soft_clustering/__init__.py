@@ -37,7 +37,7 @@ def soft_clustering_popularity_randomanime(anime_code: int, page_number: int, pa
         return recommendations, []
 
     except Exception as e:
-        print(e)    
+        print("soft_clustring_popularity ", e)    
         return [], []
 
 def soft_clustering_new_randomanime(anime_code: int, page_number: int, page_size: int = 50) -> List[int]:
@@ -53,5 +53,5 @@ def soft_clustering_new_randomanime(anime_code: int, page_number: int, page_size
         return recommendations, []
 
     except Exception as e:
-        print(e)    
+        print("soft_clustring_new ", e)    
         return [], []

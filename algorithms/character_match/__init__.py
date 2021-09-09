@@ -44,7 +44,7 @@ def character_match_randomanime(anime_code: int, page_number: int, page_size: in
         return recommendations, explanations
 
     except Exception as e:
-        print(e)
+        print("character_match ", e)
         return [], []
 
 

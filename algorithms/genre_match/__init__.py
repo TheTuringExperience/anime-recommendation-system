@@ -33,5 +33,5 @@ def genre_match_randomanime(anime_code: int, page_number:int, page_size:int = 50
         return recommendations, []
         
     except Exception as e:
-        print(e)    
+        print("genre_match ", e)
         return [], []

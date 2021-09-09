@@ -53,5 +53,5 @@ def synopsis_similarity_randomanime(anime_code: str, page_number: int, page_size
         return codes, similarity_score
 
     except Exception as e:
-        print(e)
+        print("sinopsis_similarity", e)
         return [], []
