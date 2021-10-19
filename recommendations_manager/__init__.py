@@ -16,6 +16,7 @@ from algorithms import *
 
 anime_info_df = pd.read_csv("data/anime_data.csv", encoding="utf-8")
 anime_info_df["name"] = [names_l[0] for names_l in preprocess_names(anime_info_df["show_titles"].to_list())]
+anime_info_df.fillna(value="", inplace=True)
 anime_info_df["genres"] = anime_info_df["genres"].apply(lambda s: s.split(";"))
 
 G = nx.readwrite.gpickle.read_gpickle("recommendations_manager/graph.pkl")

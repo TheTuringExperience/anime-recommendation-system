@@ -6,7 +6,7 @@ import re
 import json
 import time
 import logging
-
+import random 
 from typing import List, Dict
 
 from requests import get
@@ -75,7 +75,7 @@ def get_anime_data(anime_url: str) -> List:
     name = url.split("/")[-1]
 
     # Wait some time between requests to avoid getting blocked
-    time.sleep(2)
+    time.sleep(random.randint(2, 3))
 
     try:
         anime_data = parse_anime_page(url)

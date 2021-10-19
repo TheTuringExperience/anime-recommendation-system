@@ -61,8 +61,8 @@ def get_extra_information(anime_codes: List) -> List:
 
     return data
 
-def store_info(animes_data: List): 
-    filepath = "../data/missing_anime_data.json"
+def store_info(animes_data: List, output_file: str="anime_data.json"): 
+    filepath = os.path.join("../data/", output_file)
     # If the file containing the anime data does not exist then create it
     if not os.path.exists(filepath):
         with open(filepath, "w", encoding="utf-8") as j:            

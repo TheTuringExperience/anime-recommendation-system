@@ -20,7 +20,7 @@ def extract_fields(anime_dict: Dict) -> List:
 
 def convert_json_to_list() -> List:
     animes_data = []
-    with open("../data/anime_data.json", "r",encoding="utf-8") as j:
+    with open("../data/new_season.json", "r",encoding="utf-8") as j:
         anime_dicts = json.load(j)
         j.close()
 
@@ -38,7 +38,7 @@ def store_as_csv(animes_info: List):
     extra_info_df.fillna("Not available", inplace=True)
     # Filter out anime that are not TV shows, Movies or ONA
     extra_info_df = extra_info_df[extra_info_df.type.isin(["Movie", "ONA", "TV"])]
-    extra_info_df.to_csv("../data/anime_data.csv", mode="w", index=False)
+    extra_info_df.to_csv("../data/new_season.csv", index=False)
 
 
 def main():

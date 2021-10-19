@@ -2,6 +2,7 @@
 
 import os
 import re
+import json
 import time
 
 from random import randint
@@ -13,9 +14,12 @@ from jikanpy import Jikan
 
 logging.basicConfig(level=logging.ERROR)
 
-base_dir = "../data/reviews_small"
-source = "../data/anime_data.csv"
-codes_df = pd.read_csv(source)
+base_dir = "../data/reviews"
+source = "../data/new_season.csv"
+# codes_df = pd.read_csv(source)
+codes = json.load(open("../ra_codes.json", "r"))["codes"]
+codes = codes[codes.index(31414)-100:]
+
 num_reviews = 5
 time_between_requests = 3  # in seconds
 
@@ -25,40 +29,40 @@ if not os.path.isdir(base_dir):  # If the base_dir does not exist create it
 jikan = Jikan()
 
 #scrap the reviews starting from the lower_bound
-for index, row in codes_df.iterrows():
+for code in codes:
     # Put an upper bound on the amoun of reviews to reduce the inbalance problem
     try:
-        reviews = jikan.anime(row["code"], extension='reviews')['reviews'][:num_reviews]
+        reviews = jikan.anime(code, extension='reviews')['reviews'][:num_reviews]
         time.sleep(time_between_requests)  # wait before making too many requests as per API guidelines
 
     except APIException as e:
         #If myanimelist refuses the connection stop the scrapping and resume some time later
-        logging.error(f"The server did not respond when scrapping {index}: " + str(e))
+        logging.error(f"The server did not respond when scrapping {code}: " + str(e))
         
         try:
             print("Retrying after 15 seconds...")
             time.sleep(15)
-            reviews = jikan.anime(row["code"], extension='reviews')['reviews'][:num_reviews]
+            reviews = jikan.anime(code, extension='reviews')['reviews'][:num_reviews]
 
         except APIException as e:
             #If myanimelist refuses the connection stop the scrapping and resume some time later
-            logging.error(f"The server did not respond again when scrapping {index}: " + str(e))
+            logging.error(f"The server did not respond again when scrapping {code}: " + str(e))
             continue
 
     except Exception as e:
-        logging.error(f"Problems getting data for {row['code']}: " + str(e))
+        logging.error(f"Problems getting data for {code}: " + str(e))
         continue
 
     #if the anime has no reviews then there is no point in making a file for it
     if reviews:
         line_list = []
-        with open(os.path.join(base_dir, f"{row['code']}.txt"), "w", encoding="utf-8") as f:
+        with open(os.path.join(base_dir, f"{code}.txt"), "w", encoding="utf-8") as f:
             for review in reviews:                     
                 line_list.append(re.sub(r"\s\s+", " ", review["content"].replace("\\n", " ")) + '\n')
             f.writelines(line_list)
             f.close()        
-        print("Collected #{}: {}".format(index, row['code']))
+        print("Collected #{}: {}".format(code, code))
 
     else:
-        logging.error(f"No reviews available for {row['code']}")
+        logging.error(f"No reviews available for {code}")
         continue

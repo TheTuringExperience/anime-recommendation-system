@@ -14,7 +14,7 @@ from jikanpy import Jikan
 logging.basicConfig(level=logging.ERROR)
 
 base_dir = "../data/recommendations"
-source = "../data/anime_data.csv"
+source = "../data/new_season.csv"
 codes_df = pd.read_csv(source)
 time_between_requests = 4  # in seconds
 

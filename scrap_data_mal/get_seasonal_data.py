@@ -20,12 +20,12 @@ def get_basic_info(year: int, season: str):
     for anime in season_anime:
         if not anime.get("continuing") and anime.get("type") not in ["ONA", 'Special'] \
             and anime.get("score"):
-            seasonal_anime_data.append([anime.get("mal_id"), anime.get("url", "").split("/")[-1].lower(), anime.get("score")])            
+            seasonal_anime_data.append(anime.get("mal_id"))
     return seasonal_anime_data
 
 if __name__ == "__main__":
     year = 2021
-    season = "winter"
-    basic_info = get_basic_info(year, season)
+    season = "fall"
+    basic_info = get_basic_info(year, season)    
     animes_info = get_extra_information(basic_info)
-    store_info(animes_info)
+    store_info(animes_info, "new_season.json")

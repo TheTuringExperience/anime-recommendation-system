@@ -24,7 +24,7 @@ def preprocess_data():
     relevant_fields = ["code", "show_titles", "score"]
     code_df = pd.read_csv("../../data/anime_data_randomanime.csv")[relevant_fields]    
     # Read the review data
-    reviews_dir = "../../data/reviews_small"
+    reviews_dir = "../../data/reviews"
     all_reviews = list()
 
     for index, review_doc in enumerate(os.listdir(reviews_dir)):
@@ -46,7 +46,7 @@ def preprocess_data():
     # Match the name and score of animes in code_df to the anime reviews dataframe
     review_df['code']=review_df['code'].astype(int)
     df = pd.merge(review_df, code_df, on='code')
-
+    print(len(review_df["code"]))
 
     #Utitlity functions for removing ASCII characters, converting lower case, removing stop words, html and punctuation from description
     def _removeNonAscii(s):
@@ -86,7 +86,7 @@ def preprocess_data():
 
 def train_word2vec(df: pd.DataFrame, use_saved_file: bool=False):
     if (use_saved_file): 
-        with open('w2v_embeddings.data', 'rb') as filehandle:
+        with open('w2v_embeddings_randomanime.data', 'rb') as filehandle:
             # read the data as binary data stream
             embeddings = pickle.load(filehandle)
             return embeddings
@@ -184,7 +184,7 @@ def main():
     # tfidf_cosine_similarities = train_tfidf_word2vec(df, use_saved_file=False)
 
     print("\nRecommendations using word2vec:")
-    recommendations(5114, df, embeddings)
+    # recommendations(5114, df, embeddings)
 
 if __name__ == "__main__":
     main()
