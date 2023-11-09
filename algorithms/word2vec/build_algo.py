@@ -22,7 +22,7 @@ from gensim.models import KeyedVectors
 def preprocess_data():
     # Reading the data
     relevant_fields = ["code", "show_titles", "score"]
-    code_df = pd.read_csv("../../data/anime_data.csv")[relevant_fields]    
+    code_df = pd.read_csv("../../data/anime_data_randomanime.csv")[relevant_fields]    
     # Read the review data
     reviews_dir = "../../data/reviews_small"
     all_reviews = list()
@@ -140,7 +140,7 @@ def train_word2vec(df: pd.DataFrame, use_saved_file: bool=False):
     # Calling the function vectors
     embeddings = _vectors(df)
 
-    with open('w2v_embeddings.data', 'wb') as filehandle:
+    with open('w2v_embeddings_randomanime.data', 'wb') as filehandle:
         # store the data as binary data stream
         pickle.dump(embeddings, filehandle)
 

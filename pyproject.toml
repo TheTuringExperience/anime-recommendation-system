@@ -1,0 +1,51 @@
+[tool.poetry]
+name = "anime-recommendation-system"
+version = "0.1.0"
+description = ""
+authors = ["Oliver Rosario Reyes <oliverros42@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+aiohttp = "3.6.2"
+async-timeout = "3.0.1"
+attrs = "20.1.0"
+certifi = "2020.6.20"
+chardet = "3.0.4"
+click = "7.1.2"
+decorator = "4.4.2"
+fastapi = "0.61.0"
+h11 = "0.9.0"
+idna = "2.10"
+jikanpy = "4.2.2"
+joblib = "0.16.0"
+multidict = "4.7.6"
+networkx = "2.5"
+nltk = "3.5"
+numpy = "1.19.1"
+pandas = "1.1.1"
+psutil = "5.7.2"
+pybind11 = "2.5.0"
+pydantic = "1.6.1"
+python-dateutil = "2.8.1"
+pytz = "2020.1"
+regex = "2020.7.14"
+requests = "2.24.0"
+scikit-learn = "0.23.2"
+scipy = "1.5.2"
+simplejson = "3.17.2"
+six = "1.15.0"
+sklearn = "0.0"
+soupsieve = "2.0.1"
+starlette = "0.13.6"
+threadpoolctl = "2.1.0"
+tqdm = "4.49.0"
+urllib3 = "1.25.10"
+uvicorn = "0.11.8"
+websockets = "8.1"
+yarl = "1.5.1"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

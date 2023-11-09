@@ -11,7 +11,7 @@ import datetime as dt
 from sklearn.preprocessing import MultiLabelBinarizer, MinMaxScaler
 from sklearn.metrics.pairwise import pairwise_distances
 
-anime_data_path = "../../data/anime_data.csv"
+anime_data_path = "../../data/anime_data_randomanime.csv"
 
 # relevant_fields = ["show_titles", "score", "code", "premiered", "genres", "popularity", "members","scored_by","type","rating"]
 relevant_fields = ["show_titles", "score", "code", "premiered", "genres", "popularity", "members","scored_by"]
@@ -29,6 +29,14 @@ def convert_to_date(anime_season: str):
 
 def genres_to_array(genres_str: str):
     return genres_str.split(';')
+
+def calculate_ranking_score(row, config_dict):
+    score = row['score'] * config_dict['score']
+    popularity = row['popularity'] * config_dict['popularity']
+    members = row['members'] * config_dict['members']
+    scored_by = row['scored_by'] * config_dict['scored_by']
+    similarity = row['similarity'] * config_dict['similarity']
+    return score + popularity + members + scored_by + similarity
 
 def main():
     initial_df = animes_df.copy()
@@ -57,5 +65,37 @@ def main():
     # print(output_df.head())
     output_df.to_pickle("./full_df.pkl")
 
+    df = output_df.copy()    
+    anime_codes = output_df.index.values.tolist() 
+    all_recommendations_dict = {}
+    weight_dict={"score":0.1, "popularity":0.1, "members":0.05, "scored_by":0.05, "similarity":0.7}
+    count = 0
+
+    for anime_code in anime_codes: 
+        df["similarity"] = df[anime_code]
+        df['ranking_score'] = df.apply(calculate_ranking_score, axis=1, args=(weight_dict,))
+
+        df = df.sort_values(by=["ranking_score"], ascending=False)
+        recommendations = df.index.tolist()  
+        recommendations.remove(anime_code)  
+
+        all_recommendations_dict[anime_code] = recommendations
+
+        count += 1
+        if (count % 100 == 0): print('Processed: {}'.format(count))
+        
+    with open('genre_match_recs.pickle', 'wb') as handle:
+        pickle.dump(all_recommendations_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    
+    print('Finished: {}'.format(len(all_recommendations_dict)))
+
 if __name__ == "__main__":
     main()
+
+    # # Testing
+    # anime_code = 11757
+    # n_recommendations = 15
+
+    # with open('genre_match_recs.pickle', 'rb') as handle:
+    #     all_recommendations_dict = pickle.load(handle)
+    #     print(all_recommendations_dict[float(anime_code)][0:n_recommendations])

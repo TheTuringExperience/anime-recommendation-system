@@ -9,7 +9,7 @@ from sentence_transformers import SentenceTransformer
 #Load the sentence embeddings model
 model = SentenceTransformer('bert-base-nli-mean-tokens')
 
-animes_df = pd.read_csv("../../data/anime_data.csv", encoding="utf-8")
+animes_df = pd.read_csv("../../data/anime_data_randomanime.csv", encoding="utf-8")
 
 def preprocess_data(df):
     #Remove that anoying ending message
@@ -34,8 +34,8 @@ def main():
         corpus_embeddings.append(sum(synopsis_embedding)/len(synopsis_embedding))
     
     #Save the embeddings and the codes list to disk
-    np.save(open("./synopsis_embeddings.npy", 'wb'), corpus_embeddings)
-    pickle.dump(codes_list, open("./anime_codes.pkl", "wb"))
+    np.save(open("./synopsis_embeddings_randomanime.npy", 'wb'), corpus_embeddings)
+    pickle.dump(codes_list, open("./anime_codes_randomanime.pkl", "wb"))
 
 if __name__ == "__main__":
     main()

@@ -9,7 +9,7 @@ import pandas as pd
 
 from sklearn.preprocessing import OneHotEncoder
 
-anime_data_path = "../../data/anime_data.csv"
+anime_data_path = "../../data/anime_data_randomanime.csv"
 
 relevant_fields = ["show_titles", "score", "code", "premiered", "genres"]
 animes_df = pd.read_csv(anime_data_path, encoding="utf-8")[relevant_fields]
